@@ -1,6 +1,6 @@
 Name: qmail
 Version: 1.03+patches
-Release: 16
+Release: 17
 Group: Networking/Daemons
 URL: http://www.qmail.org/
 Copyright: Check with djb@koobera.math.uic.edu

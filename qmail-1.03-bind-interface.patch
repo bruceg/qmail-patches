@@ -81,7 +81,7 @@ diff -u qmail-1.03-orig/timeoutconn.c qmail-1.03/timeoutconn.c
 +  iplen = ip_fmt(ipstr,ip); /* Well, Dan seems to trust its output! */
 +
 +  /* check d.d.d.d, d.d.d., d.d., d., none */
-+  bindroute = constmap(bindroutes,ipstr,iplen);
++  bindroute = constmap(&bindroutes,ipstr,iplen);
 +  if (!bindroute) while (iplen--)  /* no worries - the lost char must be 0-9 */
 +    if (ipstring[iplen] == '.') 
 +      if (bindroute = constmap(&bindroutes,ipstr,iplen)) break;
