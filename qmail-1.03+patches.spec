@@ -11,9 +11,7 @@ Copyright: Check with djb@koobera.math.uic.edu
 Packager: Bruce Guenter <bruceg@em.ca>
 Source0: http://cr.yp.to/qmail/qmail-1.03.tar.gz
 Source1: qmail-rhinit.tar.gz
-%if %{msglog}
 Source2: dot.qmail-msglog
-%endif
 Source3: syncdir.c
 Source4: cron.hourly
 Source5: http://members.elysium.pl/brush/qmail-smtpd-auth/dist/qmail-smtpd-auth-0.30.tar.gz
