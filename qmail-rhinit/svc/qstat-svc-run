@@ -1,6 +1,6 @@
 #!/bin/sh
 service=qstat
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 umask 0
 exec envuidgid qmails \
 unixserver -U -q /tmp/.qmail-qstat /usr/bin/qmail-qstat

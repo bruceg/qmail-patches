@@ -1,5 +1,5 @@
 #!/bin/sh
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 
 # If rblsmtpd is installed, process rbltimeout rbldomains, and antirbldomains
 if [ -x /usr/bin/rblsmtpd ]; then

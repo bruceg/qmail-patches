@@ -1,5 +1,5 @@
 #!/bin/sh
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 readdefault concurrency concurrencyqmtpd 20
 do_ulimits
 cd /var/log

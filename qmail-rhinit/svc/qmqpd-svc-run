@@ -1,6 +1,6 @@
 #!/bin/sh
 service=qmqpd
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 readdefault concurrency concurrencyqmqpd 20
 do_ulimits
 

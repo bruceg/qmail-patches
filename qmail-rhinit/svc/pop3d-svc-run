@@ -1,6 +1,6 @@
 #!/bin/sh
 service=pop3d
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 hostname="`hostname`"
 readdefault concurrency concurrencypop3d 20
 readdefault checkpass checkpassword checkpassword
