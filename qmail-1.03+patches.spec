@@ -1,6 +1,6 @@
 Name: qmail
 Version: 1.03+patches
-Release: 17
+Release: 18
 Group: Networking/Daemons
 URL: http://www.qmail.org/
 Copyright: Check with djb@koobera.math.uic.edu
@@ -23,6 +23,7 @@ Patch8: qmail-1.03-pop3d-stat.patch
 Patch9: qmail-1.03-queuevar.patch
 Patch10: qmail-1.03-big-dns.patch
 Patch11: big-concurrency.patch
+Patch12: qmail-1.03-qmtpc.patch
 Summary: Qmail Mail Transfer Agent
 Provides: MTA
 Provides: smtpdaemon
@@ -72,6 +73,7 @@ non-privileged users access to the results from the mailq command.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 fds=`ulimit -n`
 let spawnlimit='(fds-6)/2'
