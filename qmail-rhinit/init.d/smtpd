@@ -7,4 +7,4 @@
 service=smtpd
 
 # Source function library
-. /usr/lib/qmail/init-functions
+. /usr/share/qmail/init-functions

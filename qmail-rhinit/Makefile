@@ -6,7 +6,7 @@ install = /usr/bin/install
 
 mandir = /usr/man
 bindir = /usr/bin
-libdir = /usr/lib
+sharedir = /usr/share
 svcdir = /var/service
 etcdir = /etc
 profiledir = $(etcdir)/profile.d
@@ -18,11 +18,11 @@ install:
 	$(install) -d $(PREFIX)$(profiledir)
 	$(install) -d $(PREFIX)$(initdir)
 	$(install) -d $(PREFIX)$(bindir)
-	$(install) -d $(PREFIX)$(libdir)/qmail
+	$(install) -d $(PREFIX)$(sharedir)/qmail
 	$(install) -d $(PREFIX)$(mandir)/man8
 	$(install) profile.d/* $(PREFIX)$(profiledir)
 	$(install) init.d/* $(PREFIX)$(initdir)
-	$(install) -m 644 lib/* $(PREFIX)$(libdir)/qmail
+	$(install) -m 644 share/* $(PREFIX)$(sharedir)/qmail
 	$(install) -m 644 man8/* $(PREFIX)$(mandir)/man8
 	$(install) bin/* $(PREFIX)$(bindir)
 	for svc in svc/*-svc-run; do \
