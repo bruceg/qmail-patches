@@ -24,6 +24,7 @@ Patch6: qmail-1.03-autouidgid.patch
 Patch7: qmail-1.03-syncdir.patch
 Patch8: qmail-1.03-pop3d-stat.patch
 Patch9: qmail-1.03-queuevar.patch
+Patch10: qmail-1.03-qmail-local.patch
 Patch11: big-concurrency.patch
 Patch12: http://www.almqvist.net/johan/qmail/qmail-1.03-qmtpc-mailroutes-1.5.patch
 Patch13: http://www.dataloss.net/qmtpd-badmailfrom-1.1.patch
@@ -72,6 +73,7 @@ non-privileged users access to the results from the mailq command.
 %patch0 -p1
 %endif
 %patch1 -p1
+%patch10 -p1
 %patch13 -p1
 %patch3 -p1
 %patch4 -p1
