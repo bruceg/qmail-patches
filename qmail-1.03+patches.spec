@@ -44,7 +44,6 @@ Obsoletes: qmail-qmqpd
 Obsoletes: qmail-qmtpd
 Obsoletes: qmail-smtpd
 BuildRoot: /tmp/qmail-root
-BuildRequires: ucspi-tcp >= 0.86-1
 Requires: initscripts
 Requires: net-tools
 Requires: sh-utils
@@ -232,11 +231,6 @@ pushd $RPM_BUILD_ROOT/etc/tcpcontrol
   echo :allow >qmtp.rules
   #echo :allow >spop3.rules
   echo :allow >smtp.rules
-  tcprules pop-3.cdb pop-3.tmp <pop-3.rules
-  tcprules qmqp.cdb qmqp.tmp <qmqp.rules
-  tcprules qmtp.cdb qmtp.tmp <qmtp.rules
-  #tcprules spop3.cdb spop3.tmp <spop3.rules
-  tcprules smtp.cdb smtp.tmp <smtp.rules
 popd
 
 %clean
