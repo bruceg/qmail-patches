@@ -4,5 +4,5 @@ readdefault concurrency concurrencyqmtpd 20
 do_ulimits
 cd /var/log
 exec envuidgid qmaild \
-tcpserver -U -c "$concurrency" -v -X \
+tcpserver -DRUvX -c "$concurrency" \
 	-x /etc/tcpcontrol/qmtp.cdb 0 209 qmail-qmtpd

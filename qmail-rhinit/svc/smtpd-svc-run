@@ -22,6 +22,6 @@ readdefault concurrency concurrencysmtpd 20
 do_ulimits
 
 exec envuidgid qmaild \
-tcpserver -DUXv -c "$concurrency" -l "`head -1 /var/qmail/control/me`" \
+tcpserver -DRUvX -c "$concurrency" -l "`head -1 /var/qmail/control/me`" \
 	-x /etc/tcpcontrol/smtp.cdb 0 smtp \
 	fixcrio $rbl qmail-smtpd

@@ -6,7 +6,7 @@ readdefault concurrency concurrencypop3d 20
 readdefault checkpass checkpassword checkpassword
 do_ulimits
 
-exec tcpserver -c "$concurrency" -v -R -X -D -H \
+exec tcpserver -dHRvX -c "$concurrency" \
 	-x /etc/tcpcontrol/pop-3.cdb 0 pop-3 \
 	qmail-popup "$hostname" \
 	$checkpass \
