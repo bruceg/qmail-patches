@@ -1,18 +1,23 @@
+# Add --define 'no_msglog 1' to command line to drop msglog@ copy.
+%define msglog 1
+%{?no_msglog:%define msglog 0}
+
 Name: qmail
 Version: 1.03+patches
-Release: 18
+Release: 19
 Group: Networking/Daemons
 URL: http://www.qmail.org/
 Copyright: Check with djb@koobera.math.uic.edu
 Packager: Bruce Guenter <bruceg@em.ca>
 Source0: http://cr.yp.to/qmail/qmail-1.03.tar.gz
 Source1: qmail-rhinit.tar.gz
+%if %{msglog}
 Source2: dot.qmail-msglog
+%endif
 Source3: syncdir.c
 Source4: cron.hourly
-Source5: http://cr.yp.to/checkpassword/checkpassword-0.90.tar.gz
+Source5: http://members.elysium.pl/brush/qmail-smtpd-auth/dist/qmail-smtpd-auth-0.30.tar.gz
 Patch0: qmail-1.03-msglog.patch
-Patch1: qmail-1.03-condredirect.patch
 Patch2: qmail-1.03-showctl.patch
 Patch3: qmail-1.03-bind-interface.patch
 Patch4: http://www.qmail.org/big-todo.103.patch
@@ -21,9 +26,12 @@ Patch6: qmail-1.03-autouidgid.patch
 Patch7: qmail-1.03-syncdir.patch
 Patch8: qmail-1.03-pop3d-stat.patch
 Patch9: qmail-1.03-queuevar.patch
-Patch10: qmail-1.03-big-dns.patch
 Patch11: big-concurrency.patch
-Patch12: qmail-1.03-qmtpc.patch
+Patch12: http://www.almqvist.net/johan/qmail/qmail-1.03-qmtpc-mailroutes-1.5.patch
+Patch13: http://www.dataloss.net/qmtpd-badmailfrom-1.1.patch
+Patch14: http://www.tir.com/~sgifford/qmail/qmail-0.0.0.0.patch
+Patch15: http://www.nrg4u.com/qmail/ext_todo-20020524.patch
+Patch16: http://andreas.hanssen.name/software/ext_todo-20020524-add-big-todo.patch
 Summary: Qmail Mail Transfer Agent
 Provides: MTA
 Provides: smtpdaemon
@@ -38,6 +46,7 @@ Obsoletes: qmail-qmqpd
 Obsoletes: qmail-qmtpd
 Obsoletes: qmail-smtpd
 BuildRoot: /tmp/qmail-root
+BuildRequires: ucspi-tcp >= 0.86-1
 Requires: initscripts
 Requires: net-tools
 Requires: sh-utils
@@ -54,26 +63,34 @@ are some small but very significant differences between sendmail and
 qmail and the programs that interact with them.
 
 The source for this RPM can be found at:
-	http://em.ca/~bruceg/qmail+patches/
+	http://untroubled.org/qmail+patches/
 
 This package includes a local-domain daemon used to provide
 non-privileged users access to the results from the mailq command.
 
 %prep
 %setup -n qmail-1.03
+%if %{msglog}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%endif
+%patch13 -p1
 %patch3 -p1
 %patch4 -p1
+%patch15 -p1
+%patch16 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch2 -p1
+%patch14 -p1
+
+tar -xzvf %{SOURCE5}
+mv qmail-smtpd-auth-0.30/*.[ch] .
+patch -p0 <qmail-smtpd-auth-0.30/auth.patch
 
 fds=`ulimit -n`
 let spawnlimit='(fds-6)/2'
@@ -81,26 +98,19 @@ echo $spawnlimit >conf-spawn
 
 tar -xzf %{SOURCE1}
 
-for source in cron.hourly dot.qmail-msglog syncdir.c; do
-	cp $RPM_SOURCE_DIR/$source .
-done
-
-tar -xzf %{SOURCE5}
+cp $RPM_SOURCE_DIR/cron.hourly .
+%if %{msglog}
+cp $RPM_SOURCE_DIR/dot.qmail-msglog .
+%endif
+cp $RPM_SOURCE_DIR/syncdir.c .
 
 %build
-
 make compile makelib
 ./compile syncdir.c
 ./makelib libsyncdir.a syncdir.o
 make it man
 
-pushd qmail-rhinit
-  make "CFLAGS=$RPM_OPT_FLAGS" "LDFLAGS=-s" all
-popd
-
-pushd checkpassword-0.90
-  make
-popd
+make -C qmail-rhinit all
 
 %install
 export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
@@ -175,16 +185,12 @@ pushd qmail-rhinit
   make PREFIX=$RPM_BUILD_ROOT bindir=%{_bindir} mandir=%{_mandir} install
 popd
 
-pushd checkpassword-0.90
-  echo $RPM_BUILD_ROOT >conf-home
-  rm -f auto_home.c auto_home.o
-  make setup check
-popd
-
 # Install extra shell scripts
 install_file cron.hourly etc/cron.hourly/qmail -m 755
 
+%if %{msglog}
 install_file dot.qmail-msglog etc/qmail/alias/.qmail-msglog
+%endif
 
 pushd $RPM_BUILD_ROOT/etc/qmail/alias
   echo '&root' >.qmail-postmaster
@@ -257,6 +263,7 @@ add_user qmails   qmail /var/qmail
 add_user qmaillog qmail /var/log
 
 %post
+%{_bindir}/maketcprules
 %{_bindir}/qmail-rhconfig
 %{_bindir}/make-owners /etc/qmail
 
@@ -281,8 +288,8 @@ if [ "$1" = 1 ]; then
   fi
 fi
 
-echo Read %{_docdir}/README.service for instructions
-echo on starting and stopping qmail services.
+echo Read %{_docdir}/qmail-1.03+patches/README.service
+echo for instructions on starting and stopping qmail services.
 
 %preun
 if [ $1 -gt 0 ]; then exit 0; fi
@@ -320,15 +327,10 @@ groupdel nofiles
 
 %config /etc/profile.d/*
 
-%config(noreplace) /etc/tcpcontrol/pop-3.cdb
 %config(noreplace) /etc/tcpcontrol/pop-3.rules
-%config(noreplace) /etc/tcpcontrol/qmqp.cdb
 %config(noreplace) /etc/tcpcontrol/qmqp.rules
-%config(noreplace) /etc/tcpcontrol/qmtp.cdb
 %config(noreplace) /etc/tcpcontrol/qmtp.rules
-%config(noreplace) /etc/tcpcontrol/smtp.cdb
 %config(noreplace) /etc/tcpcontrol/smtp.rules
-#%config(noreplace) /etc/tcpcontrol/spop3.cdb
 #%config(noreplace) /etc/tcpcontrol/spop3.rules
 
 %defattr(-,-,qmail)
@@ -358,7 +360,6 @@ groupdel nofiles
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/aliasempty
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/me
 
-/bin/*
 %{_bindir}/bouncesaying
 %{_bindir}/condredirect
 %{_bindir}/datemail
@@ -402,6 +403,7 @@ groupdel nofiles
 %attr(0700,root,qmail) %{_bindir}/qmail-start
 %{_bindir}/qmail-tcpok
 %{_bindir}/qmail-tcpto
+%{_bindir}/qmail-todo
 %{_bindir}/qreceipt
 %{_bindir}/qsmhook
 %attr(0711,root,qmail) %{_bindir}/splogger
@@ -414,6 +416,8 @@ groupdel nofiles
 /usr/share/qmail
 
 %{_sbindir}/sendmail
+
+%attr(0700,qmaillog,qmail) %dir /var/log/*
 
 /var/qmail
 
