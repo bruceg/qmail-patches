@@ -1,0 +1,44 @@
+Patches applied to this distribution
+------------------------------------
+
+syncdir.c -- Causes all directory operations (create, rename, delete) to
+be immediately synchronized to disk.  This prevents any messages from
+being lost due to directories missing their entries.
+
+cron.hourly
+
+qmail-1.03-msglog.patch -- Each message is given an extra local
+recipient, "msglog@ME", where "ME" is the contents of the control file
+/var/qmail/control/me.
+
+qmail-1.03-condredirect.patch -- Cause condredirect to yield a permanent
+error if the program exits 100.
+
+qmail-1.03-showctl.patch -- Patches qmail-showctl to include information
+about the extra control files used by this RPM.
+
+qmail-1.03-bind-interface.patch -- Allows qmail-remote to bind to a
+particular interface depending on the sender's email domain.
+
+big-todo.103.patch -- Splits the "todo" queue directory into
+subdirectories, just like the other queue directories.  This improves
+performance on sites with large volumes of incoming messages.
+
+qmail-1.03-autouidgid.patch -- Read the special qmail UID and GID values
+from files in /var/qmail/owners, instead of having them hard-coded into
+the binaries.
+
+qmail-1.03-pop3d-stat.patch -- Fix qmail-pop3d to only report the total
+number of non-deleted messages in the "STAT" command.
+
+qmail-1.03-queuevar.patch -- Causes all programs that execute
+qmail-queue (includes qmail-inject and qmail-smtpd) to check for the
+value of $QMAILQUEUE.  If set, that program is executed instead of
+qmail-queue.
+
+qmail-1.03-big-dns.patch -- Works around sites that have oversized DNS
+records (larger than 512 bytes).
+
+big-concurrency.patch -- Allow more than 255 concurrent remotes to be
+launched simultaneously.  The default compile allows for a maximum of
+509 remotes.
