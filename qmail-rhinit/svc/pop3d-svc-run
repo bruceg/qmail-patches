@@ -4,10 +4,11 @@ service=pop3d
 hostname="`hostname`"
 readdefault concurrency concurrencypop3d 20
 readdefault checkpass checkpassword checkpassword
-do_ulimits
+readdefault ulimitdata ulimitdata 1500000
 
-exec tcpserver -dHRvX -c "$concurrency" \
-	-x /etc/tcpcontrol/pop-3.cdb 0 pop-3 \
-	qmail-popup "$hostname" \
-	$checkpass \
-	qmail-pop3d Maildir/
+exec \
+softlimit -m $ulimitdata \
+tcpserver -dHRvX -c "$concurrency" -x /etc/tcpcontrol/pop-3.cdb 0 pop-3 \
+qmail-popup "$hostname" \
+$checkpass \
+qmail-pop3d Maildir/

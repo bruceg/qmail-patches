@@ -1,8 +1,10 @@
 #!/bin/sh
 . /usr/share/qmail/run-functions
 readdefault concurrency concurrencyqmtpd 20
-do_ulimits
-cd /var/log
-exec envuidgid qmaild \
-tcpserver -DRUvX -c "$concurrency" \
-	-x /etc/tcpcontrol/qmtp.cdb 0 209 qmail-qmtpd
+readdefault ulimitdata ulimitdata 1500000
+
+exec \
+softlimit -m $ulimitdata \
+envuidgid qmaild \
+tcpserver -DRUvX -c "$concurrency" -x /etc/tcpcontrol/qmtp.cdb 0 209 \
+qmail-qmtpd

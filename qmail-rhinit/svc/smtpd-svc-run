@@ -19,9 +19,11 @@ fi
 
 # Start daemons.
 readdefault concurrency concurrencysmtpd 20
-do_ulimits
+readdefault ulimitdata ulimitdata 1500000
 
-exec envuidgid qmaild \
+exec \
+softlimit -m $ulimitdata \
+envuidgid qmaild \
 tcpserver -DRUvX -c "$concurrency" -l "`head -1 /var/qmail/control/me`" \
 	-x /etc/tcpcontrol/smtp.cdb 0 smtp \
-	fixcrio $rbl qmail-smtpd
+fixcrio $rbl qmail-smtpd
