@@ -14,7 +14,6 @@ Source1: qmail-rhinit.tar.gz
 Source2: dot.qmail-msglog
 Source3: syncdir.c
 Source4: cron.hourly
-Source5: http://members.elysium.pl/brush/qmail-smtpd-auth/dist/qmail-smtpd-auth-0.30.tar.gz
 Patch0: qmail-1.03-msglog.patch
 Patch2: qmail-1.03-showctl.patch
 Patch3: qmail-1.03-bind-interface.patch
@@ -85,10 +84,6 @@ non-privileged users access to the results from the mailq command.
 %patch12 -p1
 %patch2 -p1
 %patch14 -p1
-
-tar -xzvf %{SOURCE5}
-mv qmail-smtpd-auth-0.30/*.[ch] .
-patch -p0 <qmail-smtpd-auth-0.30/auth.patch
 
 fds=`ulimit -n`
 let spawnlimit='(fds-6)/2'
