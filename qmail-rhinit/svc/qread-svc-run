@@ -1,5 +1,4 @@
 #!/bin/sh
-service=qread
 . /usr/share/qmail/run-functions
 umask 0
 exec envuidgid qmails \

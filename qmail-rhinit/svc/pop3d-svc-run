@@ -1,5 +1,4 @@
 #!/bin/sh
-service=pop3d
 . /usr/share/qmail/run-functions
 hostname="`hostname`"
 readdefault concurrency concurrencypop3d 20
