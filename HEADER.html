@@ -19,7 +19,7 @@ The source rpm contains all of the other files in this directory.
 <li><a href="../rpms/ucspi-tcp/">ucspi-tcp</a> version 0.86
 <li>chkconfig (included with RedHat Linux 5.0 and later)
 <li><a href="../supervise-scripts/">supervise-scripts</a> version 2.2
-<li>rpm version 2.5
+<li>rpm version 3.0 or later
 <li>If you are going to use <tt>qmail-pop3d</tt>, you may need to
 install <a href="../rpms/checkpassword/">checkpassword</a> to
 authenticate users.
@@ -119,6 +119,10 @@ file if it previously existed.
 (RH7.0 no longer has an inetd.conf).
 <li>Allow for compressed man pages (to compensate for RPM's apparent new
 default of silently compressing man pages before %files is processed).
+<li>Use %{_bindir} and company instead of hard-coded paths, to be
+compatible with both RH6.x and 7.x).
+<li>The smtpd startup script uses the value of <tt>control/me</tt> as
+the local host name, avoiding one DNS lookup on incoming connections.
 </ul></p>
 
 <p><b>Changes in release 14:</b>
@@ -237,8 +241,5 @@ seconds instead of a hard-coded 10 second timeout (per server).
 into qmail-utils package, which is required by both the base qmail package
 and the qmail-qmqpc package.
 </ul></p>
-
-<p>If you have any comments or requests, please e-mail me at
-<a href="mailto:bruceg@em.ca">bruceg@em.ca</a>. </p>
 
 <a href="mailto:bait@qcc.sk.ca"></a>
