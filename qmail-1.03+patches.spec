@@ -45,6 +45,7 @@ Obsoletes: qmail-qmtpd
 Obsoletes: qmail-smtpd
 BuildRoot: %{_tmppath}/qmail-root
 Requires: initscripts
+Requires: mailfront >= 0.85
 Requires: net-tools
 Requires: sh-utils
 Requires: shadow-utils
