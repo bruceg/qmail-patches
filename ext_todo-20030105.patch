@@ -1,7 +1,6 @@
-Binary files qmail-1.03/.EXTTODO.swp and qmail-exttodo/.EXTTODO.swp differ
-diff -BburN qmail-1.03/EXTTODO qmail-exttodo/EXTTODO
+diff -uN qmail-1.03/EXTTODO qmail-exttodo/EXTTODO
 --- qmail-1.03/EXTTODO	Thu Jan  1 01:00:00 1970
-+++ qmail-exttodo/EXTTODO	Fri May 24 10:09:30 2002
++++ qmail-exttodo/EXTTODO	Sun Jan  5 22:12:01 2003
 @@ -0,0 +1,114 @@
 +EXTTODO by Claudio Jeker <jeker@n-r-g.com> and 
 +Andre Oppermann <opi@nrg4u.com>
@@ -12,7 +11,7 @@ diff -BburN qmail-1.03/EXTTODO qmail-exttodo/EXTTODO
 +
 +These patches are under the BSD license.
 +
-+RELEASE: current ($Date: 2002/07/16 22:01:15 $)
++RELEASE: 5. Jan. 2003
 +
 +EXTTODO:
 +======================
@@ -117,7 +116,7 @@ diff -BburN qmail-1.03/EXTTODO qmail-exttodo/EXTTODO
 +character to qmail-todo.
 +
 +
-diff -BburN qmail-1.03/EXTTODO-INFO qmail-exttodo/EXTTODO-INFO
+diff -uN qmail-1.03/EXTTODO-INFO qmail-exttodo/EXTTODO-INFO
 --- qmail-1.03/EXTTODO-INFO	Thu Jan  1 01:00:00 1970
 +++ qmail-exttodo/EXTTODO-INFO	Tue Apr 30 16:49:02 2002
 @@ -0,0 +1,11 @@
@@ -132,7 +131,7 @@ diff -BburN qmail-1.03/EXTTODO-INFO qmail-exttodo/EXTTODO-INFO
 +hier.c
 +install-big.c
 +
-diff -BburN qmail-1.03/FILES qmail-exttodo/FILES
+diff -uN qmail-1.03/FILES qmail-exttodo/FILES
 --- qmail-1.03/FILES	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/FILES	Mon Apr 22 13:59:28 2002
 @@ -431,3 +431,4 @@
@@ -140,7 +139,7 @@ diff -BburN qmail-1.03/FILES qmail-exttodo/FILES
  constmap.h
  constmap.c
 +qmail-todo.c
-diff -BburN qmail-1.03/Makefile qmail-exttodo/Makefile
+diff -uN qmail-1.03/Makefile qmail-exttodo/Makefile
 --- qmail-1.03/Makefile	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/Makefile	Mon Apr 22 14:55:59 2002
 @@ -1,5 +1,7 @@
@@ -217,7 +216,7 @@ diff -BburN qmail-1.03/Makefile qmail-exttodo/Makefile
  
  qmail-upq: \
  warn-auto.sh qmail-upq.sh conf-qmail conf-break conf-split
-diff -BburN qmail-1.03/TARGETS qmail-exttodo/TARGETS
+diff -uN qmail-1.03/TARGETS qmail-exttodo/TARGETS
 --- qmail-1.03/TARGETS	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/TARGETS	Mon Apr 22 13:59:32 2002
 @@ -385,3 +385,5 @@
@@ -226,7 +225,7 @@ diff -BburN qmail-1.03/TARGETS qmail-exttodo/TARGETS
  check
 +qmail-todo.o
 +qmail-todo
-diff -BburN qmail-1.03/hier.c qmail-exttodo/hier.c
+diff -uN qmail-1.03/hier.c qmail-exttodo/hier.c
 --- qmail-1.03/hier.c	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/hier.c	Mon Apr 22 14:01:58 2002
 @@ -108,6 +108,9 @@
@@ -239,7 +238,7 @@ diff -BburN qmail-1.03/hier.c qmail-exttodo/hier.c
    c(auto_qmail,"bin","splogger",auto_uido,auto_gidq,0711);
    c(auto_qmail,"bin","qmail-newu",auto_uido,auto_gidq,0700);
    c(auto_qmail,"bin","qmail-newmrh",auto_uido,auto_gidq,0700);
-diff -BburN qmail-1.03/install-big.c qmail-exttodo/install-big.c
+diff -uN qmail-1.03/install-big.c qmail-exttodo/install-big.c
 --- qmail-1.03/install-big.c	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/install-big.c	Mon Apr 22 14:02:11 2002
 @@ -108,6 +108,9 @@
@@ -252,9 +251,9 @@ diff -BburN qmail-1.03/install-big.c qmail-exttodo/install-big.c
    c(auto_qmail,"bin","splogger",auto_uido,auto_gidq,0711);
    c(auto_qmail,"bin","qmail-newu",auto_uido,auto_gidq,0700);
    c(auto_qmail,"bin","qmail-newmrh",auto_uido,auto_gidq,0700);
-diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
+diff -uN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 --- qmail-1.03/qmail-send.c	Mon Jun 15 12:53:16 1998
-+++ qmail-exttodo/qmail-send.c	Mon Apr 22 13:55:48 2002
++++ qmail-exttodo/qmail-send.c	Sun Jan  5 22:09:42 2003
 @@ -1215,6 +1215,7 @@
  
  /* this file is too long ---------------------------------------------- TODO */
@@ -263,7 +262,7 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
  datetime_sec nexttodorun;
  DIR *tododir; /* if 0, have to opendir again */
  stralloc todoline = {0};
-@@ -1438,6 +1439,134 @@
+@@ -1438,6 +1439,143 @@
     if (fdchan[c] != -1) close(fdchan[c]);
  }
  
@@ -286,6 +285,9 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 +  todofdout = 7;
 +  todofdin = 8;
 +  flagtodoalive = 1;
++  /* sync with external todo */
++  if (write(todofdout, "S", 1) != 1) tododied();
++  
 +  return;
 +}
 +
@@ -295,8 +297,9 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 +datetime_sec *wakeup;
 +{
 +  if (flagexitasap) {
-+    if (flagtodoalive)
++    if (flagtodoalive) {
 +      write(todofdout, "X", 1);
++    }
 +  }
 +  if (flagtodoalive) {
 +    FD_SET(todofdin,rfds);
@@ -311,7 +314,6 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 + struct prioq_elt pe;
 + unsigned long id;
 + unsigned int len;
-+ char ch;
 + int c;
 +
 + for (c = 0;c < CHANNELS;++c) flagchan[c] = 0;
@@ -385,6 +387,12 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 +	case 'L':
 +	  log1(todoline.s + 1);
 +	  break;
++	case 'X':
++	  if (flagexitasap)
++	    flagtodoalive = 0;
++	  else
++	    tododied();
++	  break;
 +	default:
 +	  log1("warning: qmail-send unable to understand qmail-todo: report mangled\n");
 +	  break;
@@ -398,7 +406,7 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
  
  /* this file is too long ---------------------------------------------- MAIN */
  
-@@ -1504,6 +1633,9 @@
+@@ -1504,6 +1642,9 @@
     log1("alert: unable to reread controls: unable to switch to home directory\n");
     return;
    }
@@ -408,7 +416,7 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
   regetcontrols();
   while (chdir("queue") == -1)
    {
-@@ -1568,7 +1700,11 @@
+@@ -1568,8 +1709,12 @@
   todo_init();
   cleanup_init();
  
@@ -416,11 +424,13 @@ diff -BburN qmail-1.03/qmail-send.c qmail-exttodo/qmail-send.c
 + while (!flagexitasap || !del_canexit() || flagtodoalive)
 +#else
   while (!flagexitasap || !del_canexit())
+-  {
 +#endif
-   {
++ {
     recent = now();
  
-diff -BburN qmail-1.03/qmail-start.c qmail-exttodo/qmail-start.c
+    if (flagrunasap) { flagrunasap = 0; pqrun(); }
+diff -uN qmail-1.03/qmail-start.c qmail-exttodo/qmail-start.c
 --- qmail-1.03/qmail-start.c	Mon Jun 15 12:53:16 1998
 +++ qmail-exttodo/qmail-start.c	Mon Apr 22 13:55:48 2002
 @@ -8,6 +8,9 @@
@@ -488,10 +498,11 @@ diff -BburN qmail-1.03/qmail-start.c qmail-exttodo/qmail-start.c
   
    switch(fork()) {
      case -1: die();
-@@ -106,6 +134,34 @@
+@@ -105,6 +133,34 @@
+       execvp(*qcargs,qcargs);
        die();
    }
-  
++
 +#ifdef EXTERNAL_TODO
 +  switch(fork()) {
 +    case -1: die();
@@ -519,10 +530,9 @@ diff -BburN qmail-1.03/qmail-start.c qmail-exttodo/qmail-start.c
 +      die();
 +  }
 +#endif
-+ 
+  
    if (prot_uid(auto_uids) == -1) die();
    if (fd_copy(0,1) == -1) die();
-   if (fd_copy(1,pi1[1]) == -1) die();
 @@ -114,6 +170,10 @@
    if (fd_copy(4,pi4[0]) == -1) die();
    if (fd_copy(5,pi5[1]) == -1) die();
@@ -534,10 +544,10 @@ diff -BburN qmail-1.03/qmail-start.c qmail-exttodo/qmail-start.c
    closepipes();
    execvp(*qsargs,qsargs);
    die();
-diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
+diff -uN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 --- qmail-1.03/qmail-todo.c	Thu Jan  1 01:00:00 1970
-+++ qmail-exttodo/qmail-todo.c	Tue Apr 30 16:43:35 2002
-@@ -0,0 +1,661 @@
++++ qmail-exttodo/qmail-todo.c	Sun Jan  5 22:16:34 2003
+@@ -0,0 +1,688 @@
 +#include <sys/types.h>
 +#include <sys/stat.h>
 +#include "alloc.h"
@@ -590,8 +600,14 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +void log1(char *x);
 +void log3(char* x, char* y, char* z);
 +
-+int flagexitasap = 0; void sigterm(void) 
-+{ log1("status: qmail-todo exiting asap\n"); flagexitasap = 1; }
++int flagstopasap = 0;
++void sigterm(void)
++{
++  if (flagstopasap == 0)
++    log1("status: qmail-todo stop processing asap\n");
++  flagstopasap = 1;
++}
++
 +int flagreadasap = 0; void sighup(void) { flagreadasap = 1; }
 +int flagsendalive = 1; void senddied(void) { flagsendalive = 0; }
 +
@@ -599,12 +615,14 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +void pausedir(dir) char *dir;
 +{ log3("alert: unable to opendir ",dir,", sleeping...\n"); sleep(10); }
 +
-+void cleandied() { 
-+	log1("alert: qmail-todo: oh no! lost qmail-clean connection! dying...\n");
-+	flagexitasap = 1; }
++void cleandied()
++{ 
++  log1("alert: qmail-todo: oh no! lost qmail-clean connection! dying...\n");
++  flagstopasap = 1;
++}
 +
 +
-+/* this file is not too long ------------------------------------- FILENAMES */
++/* this file is not so long ------------------------------------- FILENAMES */
 +
 +stralloc fn = {0};
 +
@@ -620,7 +638,7 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +{ fn.len = fmtqfn(fn.s,chanaddr[c],id,1); }
 +
 +
-+/* this file is not too long ------------------------------------- REWRITING */
++/* this file is not so long ------------------------------------- REWRITING */
 +
 +stralloc rwline = {0};
 +
@@ -675,7 +693,7 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +  return 2;
 +}
 +
-+/* this file is not too long --------------------------------- COMMUNICATION */
++/* this file is not so long --------------------------------- COMMUNICATION */
 +
 +substdio sstoqc; char sstoqcbuf[1024];
 +substdio ssfromqc; char ssfromqcbuf[1024];
@@ -806,9 +824,20 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +  comm_buf.len = pos;
 +}
 +
++void comm_exit(void)
++{
++  int w;
++  
++  /* if it fails exit, we have already stoped */
++  if (!stralloc_cats(&comm_buf,"X")) _exit(1);
++  if (!stralloc_0(&comm_buf)) _exit(1);
++}
++
 +void comm_selprep(int *nfds, fd_set *wfds, fd_set *rfds)
 +{
 +  if (flagsendalive) {
++    if (flagstopasap && comm_canwrite() == 0)
++      comm_exit();
 +    if (comm_canwrite()) {
 +      FD_SET(fdout,wfds);
 +      if (*nfds <= fdout)
@@ -866,7 +895,7 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +    }
 +}
 +
-+/* this file is not too long ------------------------------------------ TODO */
++/* this file is not so long ------------------------------------------ TODO */
 +
 +datetime_sec nexttodorun;
 +DIR *tododir; /* if 0, have to opendir again */
@@ -884,7 +913,7 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +
 +void todo_selprep(int *nfds, fd_set *rfds, datetime_sec *wakeup)
 +{
-+ if (flagexitasap) return;
++ if (flagstopasap) return;
 + trigger_selprep(nfds,rfds);
 + if (tododir) *wakeup = 0;
 + if (*wakeup > nexttodorun) *wakeup = nexttodorun;
@@ -911,7 +940,7 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 + fdinfo = -1;
 + for (c = 0;c < CHANNELS;++c) fdchan[c] = -1;
 +
-+ if (flagexitasap) return;
++ if (flagstopasap) return;
 +
 + if (!tododir)
 +  {
@@ -1139,13 +1168,13 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +
 +void main()
 +{
-+ int fd;
 + datetime_sec wakeup;
 + fd_set rfds;
 + fd_set wfds;
 + int nfds;
 + struct timeval tv;
-+ int c;
++ int r;
++ char c;
 +
 + if (chdir(auto_qmail) == -1)
 +  { log1("alert: qmail-todo: cannot start: unable to switch to home directory\n"); _exit(111); }
@@ -1161,13 +1190,21 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 + todo_init();
 + comm_init();
 + 
-+ while (!flagexitasap || comm_canwrite())
++ do {
++   r = read(fdin, &c, 1);
++   if ((r == -1) && (errno != error_intr))
++     _exit(100); /* read failed probably qmail-send died */
++ } while (r =! 1); /* we assume it is a 'S' */
++ 
++ for (;;)
 +  {
 +   recent = now();
 +
 +   if (flagreadasap) { flagreadasap = 0; reread(); }
 +   if (!flagsendalive) {
-+     /* qmail-send died. We can not log and we can not work therefor _exit(1) */
++     /* qmail-send finaly exited, so do the same. */
++     if (flagstopasap) _exit(0);
++     /* qmail-send died. We can not log and we can not work therefor _exit(1). */
 +     _exit(1);
 +   }
 +
@@ -1196,6 +1233,6 @@ diff -BburN qmail-1.03/qmail-todo.c qmail-exttodo/qmail-todo.c
 +     comm_do(&wfds, &rfds);
 +    }
 +  }
-+ _exit(0);
++  /* NOTREACHED */
 +}
 +
