@@ -4,22 +4,33 @@ tars:
 	tar -czf qmail-rhinit.tar.gz --exclude=CVS qmail-rhinit
 
 rpms:
-	su -c 'cp * /usr/src/redhat/SOURCES; cd /usr/src/redhat && rpm -ba SOURCES/qmail-1.03+patches.spec && rm -f SOURCES/* && mv SRPMS/qmail-* RPMS/*/qmail-* ~-/RPMS && chown bruce.guenter ~-/RPMS/qmail-*.rpm'
+	su -c 'cp * /usr/src/redhat/SOURCES; cd /usr/src/redhat && nice rpm -ba --clean SOURCES/qmail-1.03+patches.spec && rm -f SOURCES/* && mv SRPMS/qmail-* RPMS/*/qmail-* ~-/RPMS && chown bruce.guenter ~-/RPMS/qmail-*.rpm'
+	rpm --addsign RPMS/qmail-*.rpm
 	#mv -v /tmp/qmail-*.rpm RPMS
 
-RELEASE=18
-destdir=$(HOME)/websites/em.ca/www/qmail+patches
+RELEASE=19
+destdir=$(HOME)/websites/untroubled.org/www/qmail+patches
+archdir=$(HOME)/archive/qmail+patches/
 
-HEADER.html: HEAD.html NEWS.html
-	cat $^ >$@
+release-$(RELEASE).tar.gz: RPMS/qmail-1.03+patches-$(RELEASE).src.rpm
+	mkdir $(RELEASE)
+	cp *.html $(RELEASE)
+	cd $(RELEASE) && \
+	  rpm2cpio ../RPMS/qmail-1.03+patches-$(RELEASE).src.rpm | cpio -id && \
+	  rm -f qmail-1.03.tar.gz && \
+	  tar -czf ../release-$(RELEASE).tar.gz *
+	rm -rf $(RELEASE)
+	
+install-archive: release-$(RELEASE).tar.gz
+	ln RPMS/qmail-1.03+patches-$(RELEASE).src.rpm $(archdir)
+	ln release-$(RELEASE).tar.gz $(archdir)
+	chmod 444 $(archdir)/*
 
-install:
-	cp *.html *.php* $(destdir)
-	cp RPMS/qmail-1.03+patches-$(RELEASE).src.rpm $(destdir)/SRPMS
-	tar -czf $(destdir)/sources/release-$(RELEASE).tar.gz \
-		cron.hourly dot.qmail-msglog *.patch *.spec *.sh \
-		qmail-rhinit.tar.gz syncdir.c
+install-website:
+	cp *.html $(destdir)
 	rm -f $(destdir)/current/*
-	ln $(destdir)/SRPMS/qmail-1.03+patches-$(RELEASE).src.rpm \
-	   $(destdir)/sources/release-$(RELEASE).tar.gz \
+	ln $(archdir)/release-$(RELEASE).tar.gz \
+	   $(archdir)/qmail-1.03+patches-$(RELEASE).src.rpm \
 	   $(destdir)/current
+
+install: install-archive install-website
