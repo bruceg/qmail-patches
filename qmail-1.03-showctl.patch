@@ -1,12 +1,12 @@
-diff -u qmail-1.03-orig/qmail-control.9 qmail-1.03/qmail-control.9
---- qmail-1.03-orig/qmail-control.9	Mon Jun 15 04:53:16 1998
-+++ qmail-1.03/qmail-control.9	Fri May 12 13:02:27 2000
+diff -u qmail-1.03-prev/qmail-control.9 qmail-1.03/qmail-control.9
+--- qmail-1.03-prev/qmail-control.9	Thu Mar  1 11:01:47 2001
++++ qmail-1.03/qmail-control.9	Thu Mar  1 11:20:14 2001
 @@ -40,11 +40,19 @@
  .ta 5c 10c
  control	default	used by
  
 +.I aliasempty	\fR./Mailbox	\fRqmail init
- .I badmailfrom	\fR(none)	\fRqmail-smtpd
+ .I badmailfrom	\fR(none)	\fRqmail-smtpd, qmail-qmtpd
 +.I bindroutes	\fR(none)	\fRqmail-remote
  .I bouncefrom	\fRMAILER-DAEMON	\fRqmail-send
  .I bouncehost	\fIme	\fRqmail-send
@@ -29,11 +29,10 @@ diff -u qmail-1.03-orig/qmail-control.9 qmail-1.03/qmail-control.9
  .I morercpthosts	\fR(none)	\fRqmail-smtpd
  .I percenthack	\fR(none)	\fRqmail-send
  .I plusdomain	\fIme	\fRqmail-inject
-@@ -66,12 +75,17 @@
+@@ -66,12 +75,16 @@
  .I timeoutconnect	\fR60	\fRqmail-remote
  .I timeoutremote	\fR1200	\fRqmail-remote
  .I timeoutsmtpd	\fR1200	\fRqmail-smtpd
-+.I ulimitcpu	\fRunlimited	\fRinit scripts
 +.I ulimitdata	\f$unlimited	\f$init scripts
  .I virtualdomains	\fR(none)	\fRqmail-send
  .fi
@@ -47,9 +46,9 @@ diff -u qmail-1.03-orig/qmail-control.9 qmail-1.03/qmail-control.9
  qmail-remote(8),
  qmail-send(8),
  qmail-showctl(8),
-diff -u qmail-1.03-orig/qmail-remote.8 qmail-1.03/qmail-remote.8
---- qmail-1.03-orig/qmail-remote.8	Mon Jun 15 04:53:16 1998
-+++ qmail-1.03/qmail-remote.8	Fri May 12 13:01:47 2000
+diff -u qmail-1.03-prev/qmail-remote.8 qmail-1.03/qmail-remote.8
+--- qmail-1.03-prev/qmail-remote.8	Mon Jun 15 04:53:16 1998
++++ qmail-1.03/qmail-remote.8	Thu Mar  1 11:02:06 2001
 @@ -114,6 +114,18 @@
  always exits zero.
  .SH "CONTROL FILES"
@@ -69,9 +68,9 @@ diff -u qmail-1.03-orig/qmail-remote.8 qmail-1.03/qmail-remote.8
  .I helohost
  Current host name,
  for use solely in saying hello to the remote SMTP server.
-diff -u qmail-1.03-orig/qmail-showctl.c qmail-1.03/qmail-showctl.c
---- qmail-1.03-orig/qmail-showctl.c	Mon Jun 15 04:53:16 1998
-+++ qmail-1.03/qmail-showctl.c	Fri May 12 13:02:49 2000
+diff -u qmail-1.03-prev/qmail-showctl.c qmail-1.03/qmail-showctl.c
+--- qmail-1.03-prev/qmail-showctl.c	Mon Jun 15 04:53:16 1998
++++ qmail-1.03/qmail-showctl.c	Thu Mar  1 11:39:01 2001
 @@ -214,11 +214,19 @@
      _exit(111);
    }
@@ -100,16 +99,15 @@ diff -u qmail-1.03-orig/qmail-showctl.c qmail-1.03/qmail-showctl.c
    do_str("me",0,"undefined! Uh-oh","My name is ");
    do_lst("percenthack","The percent hack is not allowed.","The percent hack is allowed for user%host@",".");
    do_str("plusdomain",1,"plusdomain","Plus domain name is ");
-@@ -260,6 +269,8 @@
+@@ -260,6 +269,7 @@
    do_int("timeoutconnect","60","SMTP client connection timeout is "," seconds");
    do_int("timeoutremote","1200","SMTP client data timeout is "," seconds");
    do_int("timeoutsmtpd","1200","SMTP server data timeout is "," seconds");
-+  do_str("ulimitcpu",0,"unlimited","Maximum amount of CPU time in seconds is ");
-+  do_str("ulimitdata",0,"unlimited","Maximum process data size in kbytes is ");
++  do_str("ulimitdata",0,"1500000","Maximum process data size in bytes is ");
    do_lst("virtualdomains","No virtual domains.","Virtual domain: ","");
  
    while (d = readdir(dir)) {
-@@ -296,6 +307,17 @@
+@@ -296,6 +306,16 @@
      if (str_equal(d->d_name,"timeoutremote")) continue;
      if (str_equal(d->d_name,"timeoutsmtpd")) continue;
      if (str_equal(d->d_name,"virtualdomains")) continue;
@@ -122,7 +120,6 @@ diff -u qmail-1.03-orig/qmail-showctl.c qmail-1.03/qmail-showctl.c
 +    if (str_equal(d->d_name,"concurrencysmtpd")) continue;
 +    if (str_equal(d->d_name,"concurrencyspop3d")) continue;
 +    if (str_equal(d->d_name,"logger")) continue;
-+    if (str_equal(d->d_name,"ulimitcpu")) continue;
 +    if (str_equal(d->d_name,"ulimitdata")) continue;
      substdio_puts(subfdout,"\n");
      substdio_puts(subfdout,d->d_name);
