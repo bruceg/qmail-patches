@@ -1,0 +1,28 @@
+#
+# run-functions  This file contains functions common to the qmail run scripts
+#
+
+exec 2>&1
+
+PATH="/sbin:/usr/sbin:/bin:/usr/bin:$PATH"
+
+# Read the contents of the ulimit control files and do what they say.
+do_ulimits() {
+  readdefault ulimitdata ulimitdata unlimited
+  readdefault ulimitcpu ulimitcpu unlimited
+  ulimit -Hc 0
+  ulimit -Hd $ulimitdata
+  ulimit -Ht $ulimitcpu
+}
+
+# Read the contents of a control file, substituting the given default
+# string if the file is empty.
+readdefault() {
+	var=$1; shift
+	file=$1; shift
+	if [ -s /var/qmail/control/$file ]; then
+		export $var="`cat /var/qmail/control/$file`"
+	else
+		export $var="$*"
+	fi
+}

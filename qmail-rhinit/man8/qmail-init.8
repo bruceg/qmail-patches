@@ -1,0 +1,234 @@
+.TH qmail-init 8
+.SH NAME
+qmail-init \- start/stop scripts for qmail
+.SH SYNOPSIS
+.B init.d/qmail
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+
+.B init.d/qmtpd
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+
+.B init.d/pop3d
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+
+.B init.d/qmqpd
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+
+.B init.d/qmtpd
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+
+.B init.d/smtpd
+[
+.I start
+|
+.I stop
+|
+.I restart
+|
+.I status
+]
+.SH DESCRIPTION
+These init scripts are responsible for starting and stopping the three
+main qmail services.
+.B init.d/qmail
+invokes
+.BR qmail-start
+(the main qmail delivery agent),
+.BR init.d/pop3d
+invokes
+.BR qmail-popup ,
+.BR checkpassword ,
+and
+.BR qmail-pop3d
+(the POP3 server system for qmail)
+by way of
+.BR tcpserver ,
+.B init.d/qmqpd
+invokes
+.BR qmail-qmqpd
+(the QMQP server for qmail -- a specialized null-client protocol)
+by way of
+.BR tpcserver ,
+.B init.d/qmtpd
+invokes
+.BR qmail-qmtpd
+(the QMTP server for qmail -- a high-speed alternative to SMTP)
+by way of
+.BR tcpserver ,
+and
+.B init.d/smtpd
+invokes
+.BR qmail-smtpd
+(the SMTP daemon for qmail)
+by way of
+.BR tcpserver ,
+as well as optionally invoking
+.BR rblsmtpd
+if that package is installed.
+
+These files typically reside in either
+.IR /etc/rc.d/init.d
+(most systems using SysV-style init scripts) or
+.IR /etc/init.d
+(Solaris).
+
+.SH CONTROL FILES
+.TP 5
+.I aliasempty
+Default delivery instructions.
+Default:
+.BR ./Mailbox .
+The contents of this file are used as the default delivery instructions
+for any legitimate local address that has either nonexistant or empty
+delivery instructions.
+See
+.B dot-qmail(5)
+for details on the contents.
+To emulate the typical sendmail and
+procmail combined configuration, install the dot-forward and procmail
+packages (and ensure they and
+.IR preline
+are in the path), and put the following lines in this file:
+.EX
+   |dot-forward .forward
+.br
+   |preline procmail
+.EE
+.TP 5
+.I antirbldomains
+If
+.IR antirbl
+is installed, this file contains a list of domains for which to disable
+RBL testing.
+Default: empty.
+.TP 5
+.I checkpassword
+The password checking program for all systems that require one
+(currently only
+.IR init.d/pop3d )
+Default:
+.BR checkpassword .
+.TP 5
+.I concurrencypop3d
+Maximum number of simultaneous inbound POP3 connections.
+Default:
+.BR 20 .
+.TP 5
+.I concurrencyqmqpd
+Maximum number of simultaneous inbound QMQP connections.
+Default:
+.BR 20 .
+.TP 5
+.I concurrencyqmtpd
+Maximum number of simultaneous inbound QMTP connections.
+Default:
+.BR 20 .
+.TP 5
+.I concurrencysmtpd
+Maximum number of simultaneous inbound SMTP connections.
+Default:
+.BR 20 .
+.TP 5
+.I logger
+The program that is to be used for message logging.
+Default:
+.BR splogger .
+It is started in the
+.IR /var/log
+directory.  If the string contains
+.BR {} ,
+then it replaced with the name of the system being logged (such as
+.BR qmail
+or
+.BR pop3d ),
+otherwise the system name is appended to the string.
+To use
+.IR multilog
+ensure that a subdirectory in
+.IR /var/log
+exists for each of the systems
+and put the following in this file:
+.EX
+   multilog -t {}
+.EE
+.TP 5
+.I rbldomains
+If
+.IR rblsmtpd
+is installed, this file lists the RBL domain servers on which to do lookups.
+Default:
+.BR rbl.maps.vix.com .
+.TP 5
+.I rbltimeout
+If
+.IR rblsmtpd
+is installed, this file sets the timeout value.
+Default:
+.BR 60 .
+.TP 5
+.I ulimitcpu
+The maximum amount of CPU time an individual daemon process (pop3d,
+qmqpd, qmtpd, or smtpd) is allowed to consume before it is terminated,
+in seconds.
+Default:
+.BR unlimited .
+.TP 5
+.I ulimitdata
+The maximum data segment size of an individual daemon process, in
+kilobytes.
+Default:
+.BR unlimited .
+.SH "SEE ALSO"
+logger(1),
+splogger(1),
+dot-qmail(5),
+qmail-log(5),
+antirbl(8),
+qmail-config(8),
+qmail-pop3d(8),
+qmail-popup(8),
+qmail-qmqpd(8),
+qmail-qmtpd(8),
+qmail-smtpd(8),
+qmail-start(8),
+rblsmtpd(8)

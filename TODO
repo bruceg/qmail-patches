@@ -1,0 +1,8 @@
+- Make note in announcement regarding aliasempty change, change to
+  cron.hourly/qmail job
+
+- Add a "reload" function to qmail that updates morercpthosts.cdb and
+  HUP's qmail-send via svc.
+
+- Consider using "-l `cat /var/qmail/control/me`" in smtpd
+  - Asked question to mailing list

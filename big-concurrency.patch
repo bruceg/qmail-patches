@@ -1,0 +1,262 @@
+From: "Johannes Erdfelt" <jerdfelt@suse.com>
+To: qmail@list.cr.yp.to
+Subject: Re: mail volume
+Date: 4 Aug 1999 20:41:00 -0700
+Mime-Version: 1.0
+Content-Type: multipart/mixed; boundary=7AUc2qLy4jB3hD7Z
+
+--7AUc2qLy4jB3hD7Z
+Content-Type: text/plain; charset=us-ascii
+
+On Thu, Aug 05, 1999, richard@illuin.demon.co.uk <richard@illuin.demon.co.uk> wrote:
+> On Wed, 4 Aug 1999, Daemeon Reiydelle wrote:
+> 
+> > (2.6 or later). There may be limitations within e.g. qmail-[lr]spawn
+> > about how many children it can manage. I am not working with that code
+> > right know so I don't know. Anyone?
+> 
+> This is what people have been trying to say -- the protocol between
+> qmail-Xspawn and qmail-send only passes a single byte for the delivery
+> attempt back in the status messages. if you want to increase the maximum
+> number above 256 one has to modify qmail-send and the common code in
+> qmail-Xspawn. making it a short should allow up to 2**16 concurrency
+> remotes.
+> 
+> **CAUTION** if you do this one should realise that qmail-send might try to
+> open 64K connections to the /same/ host because it doesn't maintain a
+> per-domain concurrency. this is distinctly Unfriendly. I produced some
+> code for qmail to do this, but when I asked my ISP if i could open >>1024
+> connections to one of their mail relays for testing they were less than
+> enthusiastic... (the code is on my desktop system somewhere between here
+> and Austin where I'm moving to next week, so I can't email it, and without
+> testing it I won't email it. the changes to up the concurrency are fairly 
+> straightforward, the once for a per-domain concurrency are non-trivial)
+
+This is the patch that I use at suse.com. We do almost 1 million
+messages a day with this patch and concurrencyremote set to 400.
+
+This patch comes with the standard disclaimer. No warranty, it may not
+work, etc. But it works for me :)
+
+It's also not pretty. It's against qmail-1.03+verh-0.02 (the ezmlm patch
+l and h patch). So the offsets may be off a little bit.
+
+JE
+
+
+--7AUc2qLy4jB3hD7Z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="qmail-bigrem.patch"
+
+diff -u qmail-1.03.orig/chkspawn.c qmail-1.03/chkspawn.c
+--- qmail-1.03.orig/chkspawn.c	Mon Jun 15 03:53:16 1998
++++ qmail-1.03/chkspawn.c	Wed Aug  4 20:33:22 1999
+@@ -22,8 +22,8 @@
+     _exit(1);
+   }
+ 
+-  if (auto_spawn > 255) {
+-    substdio_puts(subfderr,"Oops. You have set conf-spawn higher than 255.\n");
++  if (auto_spawn > 65000) {
++    substdio_puts(subfderr,"Oops. You have set conf-spawn higher than 65000.\n");
+     substdio_flush(subfderr);
+     _exit(1);
+   }
+diff -u qmail-1.03.orig/conf-spawn qmail-1.03/conf-spawn
+--- qmail-1.03.orig/conf-spawn	Mon Jun 15 03:53:16 1998
++++ qmail-1.03/conf-spawn	Tue Jul 27 13:32:30 1999
+@@ -1,4 +1,4 @@
+-120
++1000
+ 
+ This is a silent concurrency limit. You can't set it above 255. On some
+ systems you can't set it above 125. qmail will refuse to compile if the
+diff -u qmail-1.03.orig/qmail-send.c qmail-1.03/qmail-send.c
+--- qmail-1.03.orig/qmail-send.c	Mon Jun 15 03:53:16 1998
++++ qmail-1.03/qmail-send.c	Wed Aug  4 20:37:23 1999
+@@ -262,6 +262,8 @@
+  while (!stralloc_copys(&comm_buf[c],"")) nomem();
+  ch = delnum;
+  while (!stralloc_append(&comm_buf[c],&ch)) nomem();
++ ch = delnum >> 8;
++ while (!stralloc_append(&comm_buf[c],&ch)) nomem();
+  fnmake_split(id);
+  while (!stralloc_cats(&comm_buf[c],fn.s)) nomem();
+  while (!stralloc_0(&comm_buf[c])) nomem();
+@@ -906,41 +908,42 @@
+      dline[c].len = REPORTMAX;
+      /* qmail-lspawn and qmail-rspawn are responsible for keeping it short */
+      /* but from a security point of view, we don't trust rspawn */
+-   if (!ch && (dline[c].len > 1))
++   if (!ch && (dline[c].len > 2))
+     {
+      delnum = (unsigned int) (unsigned char) dline[c].s[0];
++     delnum += (unsigned int) ((unsigned int) dline[c].s[1]) << 8;
+      if ((delnum < 0) || (delnum >= concurrency[c]) || !d[c][delnum].used)
+        log1("warning: internal error: delivery report out of range\n");
+      else
+       {
+        strnum3[fmt_ulong(strnum3,d[c][delnum].delid)] = 0;
+-       if (dline[c].s[1] == 'Z')
++       if (dline[c].s[2] == 'Z')
+ 	 if (jo[d[c][delnum].j].flagdying)
+ 	  {
+-	   dline[c].s[1] = 'D';
++	   dline[c].s[2] = 'D';
+ 	   --dline[c].len;
+ 	   while (!stralloc_cats(&dline[c],"I'm not going to try again; this message has been in the queue too long.\n")) nomem();
+ 	   while (!stralloc_0(&dline[c])) nomem();
+ 	  }
+-       switch(dline[c].s[1])
++       switch(dline[c].s[2])
+ 	{
+ 	 case 'K':
+ 	   log3("delivery ",strnum3,": success: ");
+-	   logsafe(dline[c].s + 2);
++	   logsafe(dline[c].s + 3);
+ 	   log1("\n");
+ 	   markdone(c,jo[d[c][delnum].j].id,d[c][delnum].mpos);
+ 	   --jo[d[c][delnum].j].numtodo;
+ 	   break;
+ 	 case 'Z':
+ 	   log3("delivery ",strnum3,": deferral: ");
+-	   logsafe(dline[c].s + 2);
++	   logsafe(dline[c].s + 3);
+ 	   log1("\n");
+ 	   break;
+ 	 case 'D':
+ 	   log3("delivery ",strnum3,": failure: ");
+-	   logsafe(dline[c].s + 2);
++	   logsafe(dline[c].s + 3);
+ 	   log1("\n");
+-	   addbounce(jo[d[c][delnum].j].id,d[c][delnum].recip.s,dline[c].s + 2);
++	   addbounce(jo[d[c][delnum].j].id,d[c][delnum].recip.s,dline[c].s + 3);
+ 	   markdone(c,jo[d[c][delnum].j].id,d[c][delnum].mpos);
+ 	   --jo[d[c][delnum].j].numtodo;
+ 	   break;
+@@ -1544,7 +1547,7 @@
+  numjobs = 0;
+  for (c = 0;c < CHANNELS;++c)
+   {
+-   char ch;
++   char ch, ch1;
+    int u;
+    int r;
+    do
+@@ -1552,7 +1555,13 @@
+    while ((r == -1) && (errno == error_intr));
+    if (r < 1)
+     { log1("alert: cannot start: hath the daemon spawn no fire?\n"); _exit(111); }
++   do
++     r = read(chanfdin[c],&ch1,1);
++   while ((r == -1) && (errno == error_intr));
++   if (r < 1)
++    { log1("alert: cannot start: hath the daemon spawn no fire?\n"); _exit(111); }
+    u = (unsigned int) (unsigned char) ch;
++   u += (unsigned int) ((unsigned char) ch1) << 8;
+    if (concurrency[c] > u) concurrency[c] = u;
+    numjobs += concurrency[c];
+   }
+diff -u qmail-1.03.orig/spawn.c qmail-1.03/spawn.c
+--- qmail-1.03.orig/spawn.c	Mon Jun 15 03:53:16 1998
++++ qmail-1.03/spawn.c	Tue Jul 27 12:25:14 1999
+@@ -63,7 +63,7 @@
+ int flagreading = 1;
+ char outbuf[1024]; substdio ssout;
+ 
+-int stage = 0; /* reading 0:delnum 1:messid 2:sender 3:recip */
++int stage = 0; /* reading 0:delnum 1:delnum2 2:messid 3:sender 4:recip */
+ int flagabort = 0; /* if 1, everything except delnum is garbage */
+ int delnum;
+ stralloc messid = {0};
+@@ -73,6 +73,7 @@
+ void err(s) char *s;
+ {
+  char ch; ch = delnum; substdio_put(&ssout,&ch,1);
++ ch = delnum >> 8; substdio_put(&ssout,&ch,1);
+  substdio_puts(&ssout,s); substdio_putflush(&ssout,"",1);
+ }
+ 
+@@ -155,16 +156,19 @@
+     {
+      case 0:
+        delnum = (unsigned int) (unsigned char) ch;
+-       messid.len = 0; stage = 1; break;
++       stage = 1; break;
+      case 1:
++       delnum += (unsigned int) ((unsigned int) ch) << 8;
++       messid.len = 0; stage = 2; break;
++     case 2:
+        if (!stralloc_append(&messid,&ch)) flagabort = 1;
+        if (ch) break;
+-       sender.len = 0; stage = 2; break;
+-     case 2:
++       sender.len = 0; stage = 3; break;
++     case 3:
+        if (!stralloc_append(&sender,&ch)) flagabort = 1;
+        if (ch) break;
+-       recip.len = 0; stage = 3; break;
+-     case 3:
++       recip.len = 0; stage = 4; break;
++     case 4:
+        if (!stralloc_append(&recip,&ch)) flagabort = 1;
+        if (ch) break;
+        docmd();
+@@ -201,7 +205,8 @@
+ 
+  initialize(argc,argv);
+ 
+- ch = auto_spawn; substdio_putflush(&ssout,&ch,1);
++ ch = auto_spawn; substdio_put(&ssout,&ch,1);
++ ch = auto_spawn >> 8; substdio_putflush(&ssout,&ch,1);
+ 
+  for (i = 0;i < auto_spawn;++i) { d[i].used = 0; d[i].output.s = 0; }
+ 
+@@ -236,7 +241,8 @@
+ 	   continue; /* read error on a readable pipe? be serious */
+ 	 if (r == 0)
+ 	  {
+-           ch = i; substdio_put(&ssout,&ch,1);
++           char ch; ch = i; substdio_put(&ssout,&ch,1);
++           ch = i >> 8; substdio_put(&ssout,&ch,1);
+ 	   report(&ssout,d[i].wstat,d[i].output.s,d[i].output.len);
+ 	   substdio_put(&ssout,"",1);
+ 	   substdio_flush(&ssout);
+
+--7AUc2qLy4jB3hD7Z--
+
+
+From: "Fred Lindberg" <lindberg@id.wustl.edu>
+To: "nelson@crynwr.com" <nelson@crynwr.com>
+Cc: "qmail@list.cr.yp.to" <qmail@list.cr.yp.to>
+Subject: Solved: qmail-bigrem limits linux
+Date: Thu, 12 Aug 1999 13:41:18 -0500
+
+Dear Russell,
+
+Thanks for your input. The limiting factor for my redhat linux 2.2.5
+installation was a per user process limit of 256. The reason I
+sometimes got 256 or 257 concurrency is that reporting is not exactly
+synchronous with forking.
+
+Thus, in addition to increasing the number of file handles, you need to
+rebuild the kernel after editing:
+
+/usr/src/linux/include/linux/tasks.h NR_TASKS from 512 to e.g. 2048.
+Per-user limit defined to half this on the line below.
+
+There also appears to be a bug that limits the number of per process
+file handles to 1024. There are "unofficial" patches for this, but
+AFAIK, not integrated into the official kernel.
+
+If anyone has more insight into this, I'd love to hear it. With the
+patch, our P100/64MB does very well at a concurrencyremote of 400.
+Since performance was limited by concurrency (many slow/dead clients)
+we got considerably better throughput.
+
+
+-Sincerely, Fred
+
+(Frederik Lindberg, Infectious Diseases, WashU, St. Louis, MO, USA)
+
+

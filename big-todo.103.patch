@@ -1,0 +1,187 @@
+Note to readers: After you apply this patch, your queue will no longer
+be readable in its current state.  So, either install this into
+/var/qmail2 and run both qmails until the queue is emptied on the old
+one, or else accept that your current queue will have to be destroyed
+and ``rm -rf /var/qmail/queue; make setup''.
+
+
+From: Bruce Guenter <bruceg@em.ca>
+To: Russell Nelson <nelson@crynwr.com>
+Subject: Missing piece of your big-todo patch
+Date: Tue, 3 Aug 1999 08:12:11 -0600
+
+Greetings.
+
+While testing the performance of a big todo directory, I observed that
+qmail-qstat miscounted the number of messages in the todo directory.
+I've appended the necessary patch to yours.
+-- 
+Bruce Guenter <bruceg@em.ca>                       http://em.ca/~bruceg/
+
+
+diff -u orig/qmail-clean.c ./qmail-clean.c
+--- orig/qmail-clean.c	Tue Apr 15 01:05:23 1997
++++ ./qmail-clean.c	Thu Jul 10 16:20:33 1997
+@@ -73,22 +73,26 @@
+    if (line.len < 7) { respond("x"); continue; }
+    if (line.len > 100) { respond("x"); continue; }
+    if (line.s[line.len - 1]) { respond("x"); continue; } /* impossible */
+-   for (i = 5;i < line.len - 1;++i)
++   for (i = line.len - 2;i > 4;--i)
++    {
++     if (line.s[i] == '/') break;
+      if ((unsigned char) (line.s[i] - '0') > 9)
+       { respond("x"); continue; }
+-   if (!scan_ulong(line.s + 5,&id)) { respond("x"); continue; }
++    }
++   if (line.s[i] == '/')
++     if (!scan_ulong(line.s + i + 1,&id)) { respond("x"); continue; }
+    if (byte_equal(line.s,5,"foop/"))
+     {
+ #define U(prefix,flag) fmtqfn(fnbuf,prefix,id,flag); \
+ if (unlink(fnbuf) == -1) if (errno != error_noent) { respond("!"); continue; }
+-     U("intd/",0)
++     U("intd/",1)
+      U("mess/",1)
+      respond("+");
+     }
+    else if (byte_equal(line.s,4,"todo/"))
+     {
+-     U("intd/",0)
+-     U("todo/",0)
++     U("intd/",1)
++     U("todo/",1)
+      respond("+");
+     }
+    else
+diff -u orig/hier.c ./hier.c
+--- orig/hier.c	Tue Apr 15 01:05:23 1997
++++ ./hier.c	Tue Jul  8 13:40:50 1997
+@@ -100,6 +100,8 @@
+   substdio_puts(subfdout,"622:/queue/lock/:trigger:\n");
+ 
+   dsplit("queue/mess",auto_uidq,0750);
++  dsplit("queue/todo",auto_uidq,0750);
++  dsplit("queue/intd",auto_uidq,0700);
+   dsplit("queue/info",auto_uids,0700);
+   dsplit("queue/local",auto_uids,0700);
+   dsplit("queue/remote",auto_uids,0700);
+diff -u orig/qmail-queue.c ./qmail-queue.c
+--- orig/qmail-queue.c	Tue Apr 15 01:05:23 1997
++++ ./qmail-queue.c	Tue Jul  8 13:33:17 1997
+@@ -180,8 +180,8 @@
+ 
+  messnum = pidst.st_ino;
+  messfn = fnnum("mess/",1);
+- todofn = fnnum("todo/",0);
+- intdfn = fnnum("intd/",0);
++ todofn = fnnum("todo/",1);
++ intdfn = fnnum("intd/",1);
+ 
+  if (link(pidfn,messfn) == -1) die(105);
+  if (unlink(pidfn) == -1) die(105);
+diff -u orig/qmail-send.c ./qmail-send.c
+--- orig/qmail-send.c	Tue Apr 15 01:05:23 1997
++++ ./qmail-send.c	Wed Jul  9 02:04:09 1997
+@@ -101,7 +101,7 @@
+ }
+ 
+ void fnmake_info(id) unsigned long id; { fn.len = fmtqfn(fn.s,"info/",id,1); }
+-void fnmake_todo(id) unsigned long id; { fn.len = fmtqfn(fn.s,"todo/",id,0); }
++void fnmake_todo(id) unsigned long id; { fn.len = fmtqfn(fn.s,"todo/",id,1); }
+ void fnmake_mess(id) unsigned long id; { fn.len = fmtqfn(fn.s,"mess/",id,1); }
+ void fnmake_foop(id) unsigned long id; { fn.len = fmtqfn(fn.s,"foop/",id,0); }
+ void fnmake_split(id) unsigned long id; { fn.len = fmtqfn(fn.s,"",id,1); }
+@@ -1242,7 +1242,8 @@
+ /* this file is too long ---------------------------------------------- TODO */
+ 
+ datetime_sec nexttodorun;
+-DIR *tododir; /* if 0, have to opendir again */
++int flagtododir = 0; /* if 0, have to readsubdir_init again */
++readsubdir todosubdir;
+ stralloc todoline = {0};
+ char todobuf[SUBSTDIO_INSIZE];
+ char todobufinfo[512];
+@@ -1250,7 +1251,7 @@
+ 
+ void todo_init()
+ {
+- tododir = 0;
++ flagtododir = 0;
+  nexttodorun = now();
+  trigger_set();
+ }
+@@ -1262,7 +1263,7 @@
+ {
+  if (flagexitasap) return;
+  trigger_selprep(nfds,rfds);
+- if (tododir) *wakeup = 0;
++ if (flagtododir) *wakeup = 0;
+  if (*wakeup > nexttodorun) *wakeup = nexttodorun;
+ }
+ 
+@@ -1279,8 +1280,7 @@
+  char ch;
+  int match;
+  unsigned long id;
+- unsigned int len;
+- direntry *d;
++ int z;
+  int c;
+  unsigned long uid;
+  unsigned long pid;
+@@ -1291,32 +1291,26 @@
+ 
+  if (flagexitasap) return;
+ 
+- if (!tododir)
++ if (!flagtododir)
+   {
+    if (!trigger_pulled(rfds))
+      if (recent < nexttodorun)
+        return;
+    trigger_set();
+-   tododir = opendir("todo");
+-   if (!tododir)
+-    {
+-     pausedir("todo");
+-     return;
+-    }
++   readsubdir_init(&todosubdir, "todo", pausedir);
++   flagtododir = 1;
+    nexttodorun = recent + SLEEP_TODO;
+   }
+ 
+- d = readdir(tododir);
+- if (!d)
++ switch(readsubdir_next(&todosubdir, &id))
+   {
+-   closedir(tododir);
+-   tododir = 0;
+-   return;
++    case 1:
++      break;
++    case 0:
++      flagtododir = 0;
++    default:
++      return;
+   }
+- if (str_equal(d->d_name,".")) return;
+- if (str_equal(d->d_name,"..")) return;
+- len = scan_ulong(d->d_name,&id);
+- if (!len || d->d_name[len]) return;
+ 
+  fnmake_todo(id);
+ 
+--- qmail-1.03/qmail-qstat.sh.orig	Tue Aug  3 08:06:47 1999
++++ qmail-1.03/qmail-qstat.sh	Tue Aug  3 08:06:38 1999
+@@ -3,7 +3,7 @@
+ cd /var/qmail
+ messdirs=`echo queue/mess/* | wc -w`
+ messfiles=`find queue/mess/* -print | wc -w`
+-tododirs=`echo queue/todo | wc -w`
+-todofiles=`find queue/todo -print | wc -w`
++tododirs=`echo queue/todo/* | wc -w`
++todofiles=`find queue/todo/* -print | wc -w`
+ echo messages in queue: `expr $messfiles - $messdirs`
+ echo messages in queue but not yet preprocessed: `expr $todofiles - $tododirs`

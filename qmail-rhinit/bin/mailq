@@ -1,0 +1,3 @@
+#!/bin/sh
+unixcat /tmp/.qmail-qstat
+unixcat /tmp/.qmail-qread

@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# chkconfig: 2345 70 30
+# description: The qmail-qread daemon for qmail.
+#
+
+service=qread
+
+# Source function library.
+. /usr/lib/qmail/init-functions

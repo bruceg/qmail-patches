@@ -1,0 +1,3 @@
+#!/bin/sh
+service=pop3d
+. /usr/lib/qmail/log-functions

@@ -1,0 +1,12 @@
+# This alias control file is processed on EVERY SINGLE message.
+# ***THINK*** before you do this as it can put extra load on your system.
+#
+# Several things can be done here:
+# 1. Record EVERY single message in a mailbox file.
+#    *** ARE YOU SURE YOU ***REALLY*** WANT TO RECORD EVERY SINGLE MESSAGE!!!???
+#    EXAMPLE:
+#./msglog
+#
+# 2. Record Message-IDs for later tracking.
+#    EXAMPLE:
+#| awk '/^$/ { exit } /^[mM][eE][sS][sS][aA][gG][eE]-/ { print }'

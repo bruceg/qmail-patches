@@ -1,0 +1,3 @@
+#!/bin/sh
+service=qmqpd
+. /usr/lib/qmail/log-functions

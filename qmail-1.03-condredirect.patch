@@ -1,0 +1,10 @@
+--- qmail-1.03/condredirect.c.orig	Mon Jun 15 04:53:16 1998
++++ qmail-1.03/condredirect.c	Thu Jun 18 13:50:38 1998
+@@ -55,6 +55,7 @@
+     strerr_die2x(111,FATAL,"child crashed");
+   switch(wait_exitcode(wstat)) {
+     case 0: break;
++    case 100: strerr_die2x(100,FATAL,"permanent child error");
+     case 111: strerr_die2x(111,FATAL,"temporary child error");
+     default: _exit(0);
+   }

@@ -1,0 +1,39 @@
+#
+# init-functions  This file contains functions common to the qmail init scripts
+#
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+# Check to make sure qmail is installed
+[ -f /var/qmail/bin/qmail-queue ] || exit 1
+
+PATH="/sbin:/usr/sbin:/bin:/usr/bin:$PATH"
+
+set -e
+
+# All the init commands can be caught by one unified mechanism
+case "$1" in
+  start)
+	svc-start $service
+	;;
+  stop)
+	svc-stop $service
+	;;
+  status)
+	echo -n "$service: "
+	svc-status $service
+	;;
+  restart)
+	"$0" stop
+	"$0" start
+	;;
+  *)
+	echo "Usage: $service {start|stop|status|restart}"
+	exit 1
+esac
+
+exit 0

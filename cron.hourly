@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+cd /var/qmail/users
+test -s assign -a -s cdb && \
+qmail-pw2u </etc/passwd >assign && \
+qmail-newu

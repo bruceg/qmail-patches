@@ -1,0 +1,6 @@
+#!/bin/sh
+service=qread
+. /usr/lib/qmail/run-functions
+umask 0
+exec envuidgid qmails \
+unixserver -U -q /tmp/.qmail-qread /usr/bin/qmail-qread

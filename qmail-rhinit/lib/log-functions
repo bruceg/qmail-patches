@@ -1,0 +1,14 @@
+#
+# log-functions  This file contains functions common to the qmail log scripts
+#
+
+. /usr/lib/qmail/run-functions
+
+# Read the default logger command, making sure that any pipe symbols are
+# separated, and substituting '{}' with the service name.
+readdefault logger logger splogger
+logger=`echo $logger | \
+	sed -e 's/|/ | /' -e '/{}/!s/$/ '$service/ -e 's/{}/'$service/g`
+
+cd /var/log
+exec setuidgid qmaillog $logger

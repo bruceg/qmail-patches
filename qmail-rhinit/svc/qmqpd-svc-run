@@ -1,0 +1,9 @@
+#!/bin/sh
+service=qmqpd
+. /usr/lib/qmail/run-functions
+readdefault concurrency concurrencyqmqpd 20
+do_ulimits
+
+exec envuidgid qmaild \
+tcpserver -U -c "$concurrency" -v -R -X \
+	-x /etc/tcpcontrol/qmqp.cdb 0 628 qmail-qmqpd
