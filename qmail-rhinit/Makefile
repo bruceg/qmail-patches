@@ -1,7 +1,4 @@
-PREFIX = /
-CFLAGS = -O
-LD = $(CC)
-LDFLAGS = -s
+PREFIX = 
 install = /usr/bin/install
 
 mandir = /usr/man
