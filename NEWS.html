@@ -1,75 +1,6 @@
-<H1>Index of /~bruceg/qmail+patches</H1>
-
-<p><b>qmail</b> is a secure, reliable, efficient, simple message
-transfer agent.
-It is meant as a replacement for the entire sendmail-binmail system on
-typical Internet-connected UNIX hosts.
-<a href="http://www.qmail.org/">Learn more about qmail.</a></p>
-
-<p>This is (and will be) a source-only RPM of the main qmail package
-with several patches from the above web page added.  This directory
-contains all all the source files used to create the RPM.
-<a href="http://www.rpm.org/">Learn more about RPM.</a>
-The source rpm contains all of the other files in this directory.
-</p>
-
-<p><b>This package requires the following packages:</b>
+<p><b>Changes in release 18:</b>
 <ul>
-<li><a href="../supervise-scripts/">supervise-scripts</a> version 3.2
-<li><a href="../rpms/daemontools/">daemontools</a> version 0.70
-<li><a href="../rpms/ucspi-tcp/">ucspi-tcp</a> version 0.88
-<li>rpm version 3.0 or later
-<li>If you are going to use <tt>qmail-mailq</tt>, <a
-href="../ucspi-unix/">ucspi-unix</a>
-</ul>
-Other packages recommended for efficient use of qmail are:
-<ul>
-<li><a href="../rpms/dot-forward/">dot-forward</a>
-<li><a href="../rpms/rblsmtpd/">rblsmtpd</a>
--- A RBL blocking add-on for qmail-smtpd
-<li><a href="../nullmailer/">nullmailer</a>
--- "Dumb" client software package which can deliver via either SMTP or QMQP
-<li><a href="../vmailmgr/">vmailmgr</a>
--- Virtual mail domain manager for qmail
-</ul></p>
-
-<p><b><i><font size=+1>NOTE:</font></i>
-Do NOT distribute binary packages built from this distribution!</b> 
-Such packages are explicitly disallowed by the author of qmail, and
-frustrating as it may be, I understand his reasoning.
-This packaging of qmail comes with no warranties of any kind.
-</p>
-
-<p><b>Features of this package:</b>
-<ul>
-<li>Johannes Erdfelt's big-concurrency patch, which allows qmail-send to
-spawn more than 255 processes.
-<li>Russell Nelson's big-todo patch, which allows qmail to receive mail
-much faster.
-<li>A big-DNS patch, which allows qmail to work with sites that
-have DNS responses that are larger than 512 bytes.
-<li>Startup scripts set configurable limits on daemon's CPU time and
-data size to avoid denial-of-service attacks.
-<li>Integrated optional RBL blocking support from multiple servers.
-<li>UID/GID numbers are configured into a set of control files instead
-  of hard-coded in the binaries.  This would allow a binary RPM to be
-  distributed unmodified to any setup.
-<li>The qmail run script uses the contents of
-  <samp>/etc/qmail/control/aliasempty</samp> for the aliasempty argument to
-  qmail-start
-<li>Message logging is done via the string in
-  <samp>/etc/qmail/control/logger</samp>
-<li>qmail-showctl shows the contents of all the control files used in
-  this package
-<li>Intelligent login scripts (<samp>/etc/profile.d/qmail.sh</samp> and
-  <samp>/etc/profile.d/qmail.tcsh</samp>).
-<li>A man page documenting the control files used by all the init scripts
-<li>All the network daemons use tcpserver to manage connections
-<li>Chuck Foster's patch to bind to local interfaces on outgoing
-  connections, ported to qmail-1.03
-<li>Evan Champion's patch to conredirect, ported to qmail-1.03
-<li>A fix for broken CR/LF conventions on SMTP connections that doesn't
-require a patch to qmail.
+<li>Added the patch from Russell Nelson to support QMTP in qmail-remote.
 </ul></p>
 
 <p><b>Changes in release 17:</b>
@@ -235,5 +166,3 @@ seconds instead of a hard-coded 10 second timeout (per server).
 into qmail-utils package, which is required by both the base qmail package
 and the qmail-qmqpc package.
 </ul></p>
-
-<a href="mailto:bait@qcc.sk.ca"></a>
