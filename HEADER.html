@@ -102,6 +102,11 @@ require a patch to qmail.
 	<td>Support for the qmail SMTP daemon with optional RBL blocking</td>
 </tr></table></p>
 
+<p><b>Changes in release 16:</b>
+<ul>
+<li>Fixed the broken paths in the run scripts.
+</ul>
+
 <p><b>Changes in release 15:</b>
 <ul>
 <li>Changed the default aliasempty to deliver to <tt>./Maildir/</tt>.
@@ -127,6 +132,7 @@ the local host name, avoiding one DNS lookup on incoming connections.
 <tt>users</tt> and <tt>morercpthosts</tt> CDB files and HUP's
 <tt>qmail-send</tt> to make it reload its <tt>locals</tt> and
 <tt>virtualdomains</tt> files.
+<li>Removed the completely non-functional SSL-wrapped POP3 support.
 </ul></p>
 
 <p><b>Changes in release 14:</b>

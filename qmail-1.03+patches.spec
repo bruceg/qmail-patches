@@ -1,6 +1,6 @@
 Name: qmail
 Version: 1.03+patches
-Release: 15
+Release: 16
 Group: Networking/Daemons
 URL: http://www.qmail.org/
 Copyright: Check with djb@koobera.math.uic.edu
@@ -105,18 +105,18 @@ Requires: ucspi-tcp >= 0.86-1
 %description qmqpd
 Support files for running the qmail QMQP server.
 
-%package spop3d
-Group: Networking/Daemons
-Summary: SSL-wrapped POP3 server support for qmail
-Provides: spop3daemon
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: sh-utils
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-tcp >= 0.86-1
-Requires: sslwrap
-%description spop3d
-Support files for running the qmail POP3 server with the SSL wrapper.
+#%package spop3d
+#Group: Networking/Daemons
+#Summary: SSL-wrapped POP3 server support for qmail
+#Provides: spop3daemon
+#Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
+#Requires: chkconfig
+#Requires: sh-utils
+#Requires: supervise-scripts >= 2.2
+#Requires: ucspi-tcp >= 0.86-1
+#Requires: sslwrap
+#%description spop3d
+#Support files for running the qmail POP3 server with the SSL wrapper.
 
 %prep
 %setup -n qmail-1.03
@@ -271,12 +271,12 @@ pushd $RPM_BUILD_ROOT/etc/tcpcontrol
   echo :allow >pop-3.rules
   echo :deny >qmqp.rules
   echo :allow >qmtp.rules
-  echo :allow >spop3.rules
+  #echo :allow >spop3.rules
   echo :allow >smtp.rules
   tcprules pop-3.cdb pop-3.tmp <pop-3.rules
   tcprules qmqp.cdb qmqp.tmp <qmqp.rules
   tcprules qmtp.cdb qmtp.tmp <qmtp.rules
-  tcprules spop3.cdb spop3.tmp <spop3.rules
+  #tcprules spop3.cdb spop3.tmp <spop3.rules
   tcprules smtp.cdb smtp.tmp <smtp.rules
 popd
 
@@ -472,10 +472,11 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 %attr(0711,root,qmail) %{_bindir}/splogger
 %{_bindir}/tcp-env
 
-/usr/lib/qmail
 /usr/lib/sendmail
 
 %{_mandir}/man?/*
+
+/usr/share/qmail
 
 %{_sbindir}/sendmail
 
@@ -534,13 +535,13 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 %config /var/service/smtpd/log/run
 %config /var/service/smtpd/run
 
-%files spop3d
-%defattr(-,root,qmail)
-/etc/rc.d/init.d/pop3d
-%config(noreplace) /etc/tcpcontrol/spop3.cdb
-%config(noreplace) /etc/tcpcontrol/spop3.rules
-%attr(1755,root,qmail) %dir /var/service/spop3d
-%dir /var/service/spop3d/log
-%config /var/service/spop3d/log/run
-%config /var/service/spop3d/run
+#%files spop3d
+#%defattr(-,root,qmail)
+#/etc/rc.d/init.d/pop3d
+#%config(noreplace) /etc/tcpcontrol/spop3.cdb
+#%config(noreplace) /etc/tcpcontrol/spop3.rules
+#%attr(1755,root,qmail) %dir /var/service/spop3d
+#%dir /var/service/spop3d/log
+#%config /var/service/spop3d/log/run
+#%config /var/service/spop3d/run
 
