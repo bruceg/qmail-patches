@@ -78,7 +78,7 @@ int open(const char *file,int oflag,mode_t mode)
   int fd = SYS_OPEN(file, oflag, mode);
   if(fd == -1)
     return fd;
-  if (oflag & (O_WRONLY | O_RDWR))
+  if (oflag & O_CREAT)
     if (fdirsyncfn(file) == -1) {
       SYS_CLOSE(fd);
       return -1;
