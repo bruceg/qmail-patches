@@ -19,7 +19,7 @@ fi
 
 # Start daemons.
 readdefault concurrency concurrencysmtpd 20
-readdefault ulimitdata ulimitdata 1500000
+readdefault ulimitdata ulimitdata 2000000
 
 exec \
 softlimit -m $ulimitdata \

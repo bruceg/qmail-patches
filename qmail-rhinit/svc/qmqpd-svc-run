@@ -2,7 +2,7 @@
 service=qmqpd
 . /usr/share/qmail/run-functions
 readdefault concurrency concurrencyqmqpd 20
-readdefault ulimitdata ulimitdata 1500000
+readdefault ulimitdata ulimitdata 2000000
 
 exec \
 softlimit -m $ulimitdata \

@@ -4,7 +4,7 @@ service=pop3d
 hostname="`hostname`"
 readdefault concurrency concurrencypop3d 20
 readdefault checkpass checkpassword checkpassword
-readdefault ulimitdata ulimitdata 1500000
+readdefault ulimitdata ulimitdata 2000000
 
 exec \
 softlimit -m $ulimitdata \
