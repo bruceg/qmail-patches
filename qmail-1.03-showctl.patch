@@ -26,9 +26,9 @@ diff -u qmail-1.03-prev/qmail-control.9 qmail-1.03/qmail-control.9
  .I localiphost	\fIme	\fRqmail-smtpd
  .I locals	\fIme	\fRqmail-send
 +.I logger	\fRsplogger	\fRall init scripts
+ .I mailroutes	\fR(none)	\fRqmail-remote
  .I morercpthosts	\fR(none)	\fRqmail-smtpd
  .I percenthack	\fR(none)	\fRqmail-send
- .I plusdomain	\fIme	\fRqmail-inject
 @@ -66,12 +75,16 @@
  .I timeoutconnect	\fR60	\fRqmail-remote
  .I timeoutremote	\fR1200	\fRqmail-remote
@@ -95,10 +95,10 @@ diff -u qmail-1.03-prev/qmail-showctl.c qmail-1.03/qmail-showctl.c
    do_str("idhost",1,"idhost","Message-ID host name is ");
    do_str("localiphost",1,"localiphost","Local IP address becomes ");
    do_lst("locals","Messages for me are delivered locally.","Messages for "," are delivered locally.");
-+  do_str("logger",0,"splogger","Logging is done via: ");
++  do_str("logger",0,"multilog t /var/log/{}","Logging is done via: ");
+   do_lst("mailroutes","No artificial mail routes.","mail route: ","");
    do_str("me",0,"undefined! Uh-oh","My name is ");
    do_lst("percenthack","The percent hack is not allowed.","The percent hack is allowed for user%host@",".");
-   do_str("plusdomain",1,"plusdomain","Plus domain name is ");
 @@ -260,6 +269,7 @@
    do_int("timeoutconnect","60","SMTP client connection timeout is "," seconds");
    do_int("timeoutremote","1200","SMTP client data timeout is "," seconds");

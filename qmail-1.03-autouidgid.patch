@@ -1,6 +1,6 @@
 diff -u -N qmail-1.03-orig/Makefile qmail-1.03/Makefile
 --- qmail-1.03-orig/Makefile	Mon Jun 15 04:53:16 1998
-+++ qmail-1.03/Makefile	Thu Jun 25 19:28:36 1998
++++ qmail-1.03/Makefile	Mon Jul 15 22:24:40 2002
 @@ -27,15 +27,6 @@
  	echo LD=\'`head -1 conf-ld`\' \
  	) > auto-ccld.sh
@@ -93,15 +93,15 @@ diff -u -N qmail-1.03-orig/Makefile qmail-1.03/Makefile
  	auto_uids.o strerr.a substdio.a error.a str.a fs.a 
  
  instcheck.o: \
-@@ -808,7 +775,7 @@
- forward preline condredirect bouncesaying except maildirmake \
+@@ -805,7 +772,7 @@
+ qmail-pop3d qmail-popup qmail-qmqpc qmail-qmqpd qmail-qmtpd \
+ qmail-smtpd sendmail tcp-env qmail-newmrh config config-fast dnscname \
+ dnsptr dnsip dnsmxip dnsfq hostname ipmeprint qreceipt qsmhook qbiff \
+-forward preline condredirect bouncesaying except maildirmake \
++forward preline condredirect bouncesaying except maildirmake make-owners \
  maildir2mbox maildirwatch qail elq pinq idedit install-big install \
  instcheck home home+df proc proc+df binm1 binm1+df binm2 binm2+df \
--binm3 binm3+df
-+binm3 binm3+df make-owners
- 
- load: \
- make-load warn-auto.sh systype
+ binm3 binm3+df
 @@ -918,6 +885,15 @@
  	cat auto-ccld.sh make-makelib.sh > make-makelib
  	chmod 755 make-makelib
@@ -190,7 +190,7 @@ diff -u -N qmail-1.03-orig/Makefile qmail-1.03/Makefile
  cdb.3 cdb.h cdb_hash.c cdb_seek.c cdb_unpack.c cdbmake.h \
 diff -u -N qmail-1.03-orig/TARGETS qmail-1.03/TARGETS
 --- qmail-1.03-orig/TARGETS	Mon Jun 15 04:53:16 1998
-+++ qmail-1.03/TARGETS	Thu Jun 25 18:10:53 1998
++++ qmail-1.03/TARGETS	Mon Jul 15 22:26:26 2002
 @@ -150,11 +150,6 @@
  cdb_unpack.o
  cdb_seek.o
@@ -203,11 +203,14 @@ diff -u -N qmail-1.03-orig/TARGETS qmail-1.03/TARGETS
  auto_uids.o
  qmail-lspawn
  qmail-getpw.o
-@@ -385,3 +380,4 @@
- man
- setup
- check
+@@ -294,6 +289,7 @@
+ except
+ maildirmake.o
+ maildirmake
 +make-owners
+ maildir2mbox.o
+ maildir2mbox
+ maildirwatch.o
 diff -u -N qmail-1.03-orig/auto_uids.c qmail-1.03/auto_uids.c
 --- qmail-1.03-orig/auto_uids.c	Wed Dec 31 18:00:00 1969
 +++ qmail-1.03/auto_uids.c	Thu Jun 25 18:09:46 1998
