@@ -1,5 +1,5 @@
 #!/bin/sh
 . /usr/share/qmail/run-functions
-readdefault aliasempty aliasempty ./Mailbox
+readdefault aliasempty aliasempty ./Maildir/
 make-owners /var/qmail
 exec qmail-start "$aliasempty"
