@@ -9,3 +9,6 @@ else
 	setenv MAIL "${HOME}/Mailbox"
 endif
 setenv MAILDIR "$MAIL"
+if ($?MANPATH) then
+  setenv MANPATH "${MANPATH}:/var/qmail/man"
+endif
