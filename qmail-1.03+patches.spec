@@ -43,7 +43,7 @@ Obsoletes: qmail-pop3d
 Obsoletes: qmail-qmqpd
 Obsoletes: qmail-qmtpd
 Obsoletes: qmail-smtpd
-BuildRoot: /tmp/qmail-root
+BuildRoot: %{_tmppath}/qmail-root
 Requires: initscripts
 Requires: net-tools
 Requires: sh-utils
