@@ -7,7 +7,7 @@ diff -u qmail-1.03-big-todo/Makefile qmail-1.03/Makefile
  hier.o: \
 -compile hier.c auto_qmail.h auto_split.h auto_uids.h fmt.h fifo.h
 +compile hier.c auto_split.h auto_uids.h fmt.h fifo.h
- 	./compile hier.c
+ 	./compile $(DEFINES) hier.c
  
  home: \
 @@ -753,8 +753,7 @@
@@ -17,7 +17,7 @@ diff -u qmail-1.03-big-todo/Makefile qmail-1.03/Makefile
 -compile install-big.c auto_qmail.h auto_split.h auto_uids.h fmt.h \
 -fifo.h
 +compile install-big.c auto_split.h auto_uids.h fmt.h fifo.h
- 	./compile install-big.c
+ 	./compile $(DEFINES) install-big.c
  
  install.o: \
 diff -u qmail-1.03-big-todo/hier.c qmail-1.03/hier.c
