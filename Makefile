@@ -7,7 +7,7 @@ rpms:
 	su -c 'cp * /usr/src/redhat/SOURCES; cd /usr/src/redhat && rpm -ba SOURCES/qmail-1.03+patches.spec && rm -f SOURCES/* && mv SRPMS/qmail-* RPMS/*/qmail-* ~-/RPMS && chown bruce.guenter ~-/RPMS/qmail-*.rpm'
 	#mv -v /tmp/qmail-*.rpm RPMS
 
-RELEASE=16
+RELEASE=17
 destdir=$(HOME)/websites/em.ca/www/qmail+patches
 
 install:
