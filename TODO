@@ -1,5 +1,2 @@
 - Make note in announcement regarding aliasempty change, change to
   cron.hourly/qmail job
-
-- Add a "reload" function to qmail that updates morercpthosts.cdb,
-  users/cdb, and HUP's qmail-send via svc.

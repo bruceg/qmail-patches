@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+cd /var/qmail/users
+if [ -s assign -a -s cdb ]; then
+  echo "Regenerating qmail/users/cdb"
+  qmail-pw2u </etc/passwd >assign && qmail-newu
+fi
+
+cd /var/qmail/control
+if [ morercpthosts -nt morercpthosts.cdb ]; then
+  echo "Regenerating qmail/control/morercpthosts.cdb"
+  qmail-newmrh
+fi
+
+echo "Issuing the qmail reload signal."
+svc -h /var/service/qmail

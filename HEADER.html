@@ -123,6 +123,10 @@ default of silently compressing man pages before %files is processed).
 compatible with both RH6.x and 7.x).
 <li>The smtpd startup script uses the value of <tt>control/me</tt> as
 the local host name, avoiding one DNS lookup on incoming connections.
+<li>Added a <tt>qmail-reload</tt> command, that regenerates the
+<tt>users</tt> and <tt>morercpthosts</tt> CDB files and HUP's
+<tt>qmail-send</tt> to make it reload its <tt>locals</tt> and
+<tt>virtualdomains</tt> files.
 </ul></p>
 
 <p><b>Changes in release 14:</b>
