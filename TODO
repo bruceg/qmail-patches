@@ -2,8 +2,6 @@
 
 - Remove "logger" control file, and fix controls on multilog.
 
-- Use smtpfront-qmail in place of qmail-smtpd
-
 - Use pop3front-auth/maildir in place of qmail-popup/pop3d
 
 - Get spop3d script working.
