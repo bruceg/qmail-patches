@@ -35,6 +35,7 @@ Requires: net-tools
 Requires: sh-utils
 Requires: shadow-utils
 Requires: supervise-scripts >= 2.2
+Requires: ucspi-unix
 
 %description
 Qmail is a small, fast, secure replacement for the sendmail package,
@@ -46,15 +47,7 @@ qmail and the programs that interact with them.
 The source for this RPM can be found at:
 	http://em.ca/~bruceg/qmail+patches/
 
-%package mailq
-Group: Networking/Daemons
-Summary: Support for the "mailq" command for qmail
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-unix
-%description mailq
-This package contains a local-domain daemon used to provide
+This package includes a local-domain daemon used to provide
 non-privileged users access to the results from the mailq command.
 
 %package pop3d
@@ -435,6 +428,7 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 %{_bindir}/maildir2mbox
 %{_bindir}/maildirmake
 %{_bindir}/maildirwatch
+%{_bindir}/mailq
 %{_bindir}/mailsubj
 %{_bindir}/make-owners
 %{_bindir}/pinq
@@ -484,16 +478,12 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 %dir /var/service/qmail/log
 %config /var/service/qmail/log/run
 %config /var/service/qmail/run
-
-/var/qmail
-
-%files mailq
-%defattr(-,root,qmail)
-%{_bindir}/mailq
 %dir /var/service/qread
 %config /var/service/qread/run
 %dir /var/service/qstat
 %config /var/service/qstat/run
+
+/var/qmail
 
 %files pop3d
 %defattr(-,root,qmail)
