@@ -129,6 +129,7 @@ install -d $RPM_BUILD_ROOT%{_bindir}
 install -d $RPM_BUILD_ROOT%{_mandir}
 install -d $RPM_BUILD_ROOT%{_sbindir}
 pushd $RPM_BUILD_ROOT
+  install -d bin
   install -d etc/cron.hourly
   install -d -o alias -g qmail etc/qmail/alias
   install -d -o root -g qmail etc/qmail
@@ -259,7 +260,10 @@ add_user qmaillog qmail /var/log
 
 for svc in qmail qread qstat # pop3d qmqpd qmtpd smtpd
 do
-  test -e /service/$svc || svc-add /var/qmail/service/$svc
+  if ! [ -e /service/$svc ]
+  then
+    svc-add /var/qmail/service/$svc
+  fi
 done
 
 if [ "$1" = 1 ]; then
@@ -283,7 +287,10 @@ if [ $1 -gt 0 ]; then exit 0; fi
 
 for svc in pop3d qmail qmqpd qmtpd qread qstat smtpd
 do
-  test ! -e /service/$svc || svc-remove $svc
+  if [ -e /service/$svc ]
+  then
+    svc-remove $svc
+  fi
 done
 
 echo "Removing Qmail user ids..."
@@ -349,6 +356,7 @@ groupdel nofiles
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/aliasempty
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/me
 
+/bin/*
 %{_bindir}/bouncesaying
 %{_bindir}/condredirect
 %{_bindir}/datemail
