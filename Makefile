@@ -8,7 +8,7 @@ rpms:
 	rpm --addsign RPMS/qmail-*.rpm
 	#mv -v /tmp/qmail-*.rpm RPMS
 
-RELEASE=19
+RELEASE := $(shell perl -ne 'print if s/^Release:\s+//' qmail-1.03+patches.spec)
 destdir=$(HOME)/websites/untroubled.org/www/qmail+patches
 archdir=$(HOME)/archive/qmail+patches/
 
