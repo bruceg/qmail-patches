@@ -2,7 +2,7 @@
 # log-functions  This file contains functions common to the qmail log scripts
 #
 
-. /usr/lib/qmail/run-functions
+. /usr/share/qmail/run-functions
 
 # Read the default logger command, making sure that any pipe symbols are
 # separated, and substituting '{}' with the service name.
