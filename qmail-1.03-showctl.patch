@@ -10,7 +10,6 @@ diff -u qmail-1.03-prev/qmail-control.9 qmail-1.03/qmail-control.9
 +.I bindroutes	\fR(none)	\fRqmail-remote
  .I bouncefrom	\fRMAILER-DAEMON	\fRqmail-send
  .I bouncehost	\fIme	\fRqmail-send
-+.I checkpassword	\fRcheckpassword	\fRpop3d, spop3d init script
  .I concurrencylocal	\fR10	\fRqmail-send
 +.I concurrencypop3d	\fR20	\fRpop3d init script
 +.I concurrencyqmqpd	\fR20	\fRqmqpd init script
@@ -18,6 +17,7 @@ diff -u qmail-1.03-prev/qmail-control.9 qmail-1.03/qmail-control.9
  .I concurrencyremote	\fR20	\fRqmail-send
 +.I concurrencysmtpd	\fR20	\fRsmtpd init script
 +.I concurrencyspop3d	\fR20	\fRspop3d init script
++.I cvm	\fRcvm-unix	\fRpop3d, spop3d init script
  .I defaultdomain	\fIme	\fRqmail-inject
  .I defaulthost	\fIme	\fRqmail-inject
  .I databytes	\fR0	\fRqmail-smtpd
@@ -80,7 +80,6 @@ diff -u qmail-1.03-prev/qmail-showctl.c qmail-1.03/qmail-showctl.c
 +  do_lst("bindroutes","No binding routes.","Binding route: ","");
    do_str("bouncefrom",0,"MAILER-DAEMON","Bounce user name is ");
    do_str("bouncehost",1,"bouncehost","Bounce host name is ");
-+  do_str("checkpassword",0,"checkpassword","Password checking program is ");
    do_int("concurrencylocal","10","Local concurrency is ","");
 +  do_int("concurrencypop3d","20","POP-3 daemon concurrency is ","");
 +  do_int("concurrencyqmqpd","20","QMQP daemon concurrency is ","");
@@ -88,6 +87,7 @@ diff -u qmail-1.03-prev/qmail-showctl.c qmail-1.03/qmail-showctl.c
    do_int("concurrencyremote","20","Remote concurrency is ","");
 +  do_int("concurrencysmtpd","20","SMTP daemon concurrency is ","");
 +  do_int("concurrencyspop3d","20","SSL POP-3 daemon concurrency is ","");
++  do_str("cvm",0,"cvm-unix","Credential Validation Module is ");
    do_int("databytes","0","SMTP DATA limit is "," bytes");
    do_str("defaultdomain",1,"defaultdomain","Default domain name is ");
    do_str("defaulthost",1,"defaulthost","Default host name is ");
@@ -113,12 +113,12 @@ diff -u qmail-1.03-prev/qmail-showctl.c qmail-1.03/qmail-showctl.c
      if (str_equal(d->d_name,"virtualdomains")) continue;
 +    if (str_equal(d->d_name,"aliasempty")) continue;
 +    if (str_equal(d->d_name,"bindroutes")) continue;
-+    if (str_equal(d->d_name,"checkpassword")) continue;
 +    if (str_equal(d->d_name,"concurrencypop3d")) continue;
 +    if (str_equal(d->d_name,"concurrencyqmqpd")) continue;
 +    if (str_equal(d->d_name,"concurrencyqmtpd")) continue;
 +    if (str_equal(d->d_name,"concurrencysmtpd")) continue;
 +    if (str_equal(d->d_name,"concurrencyspop3d")) continue;
++    if (str_equal(d->d_name,"cvm")) continue;
 +    if (str_equal(d->d_name,"logger")) continue;
 +    if (str_equal(d->d_name,"ulimitdata")) continue;
      substdio_puts(subfdout,"\n");

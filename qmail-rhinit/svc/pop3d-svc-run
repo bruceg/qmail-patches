@@ -2,12 +2,11 @@
 . /usr/share/qmail/run-functions
 hostname="`hostname`"
 readdefault concurrency concurrencypop3d 20
-readdefault checkpass checkpassword checkpassword
+readdefault cvm cvm cvm-unix
 readdefault ulimitdata ulimitdata 3000000
 
 exec \
 softlimit -m $ulimitdata \
 tcpserver -dHRvX -c "$concurrency" -x /etc/tcpcontrol/pop-3.cdb 0 pop-3 \
-qmail-popup "$hostname" \
-$checkpass \
-qmail-pop3d Maildir/
+pop3front-auth $cvm \
+pop3front-maildir
