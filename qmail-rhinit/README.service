@@ -1,0 +1,30 @@
+qmail Services
+--------------
+
+There are seven services associated with qmail:
+	pop3d - POP3 server
+	qmail * Main qmail server
+	qmqpd - QMQP server
+	qmtpd - QMTP server
+	qread * Local qmail queue-reading server
+	qstat * Local qmail queue-statistics server
+	smtpd - SMTP server
+
+The services marked with an asterisk are installed by default.  The
+"qread" and "qstat" services are used by the "mailq" command to provide
+information about the status of the mail queue.  The "qmail" service
+should always be installed.
+
+To install one of the other services, run the following command:
+	svc-add /var/qmail/service/NAME
+where "NAME" is replaced by the one of the service names listed above.
+This should also cause the service to start shortly.  To ensure that the
+service starts, run the following command:
+	svc-start NAME
+From this point on, the service will start every time you boot.
+
+To temporarily stop a service, run the following command:
+	svc-stop NAME
+This will mark the service as "down", and it will not be started at
+boot.  To permanently remove the service, run:
+	svc-remove NAME
