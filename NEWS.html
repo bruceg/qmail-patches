@@ -1,3 +1,28 @@
+<p><b>Changes in release 19:</b>
+<ul>
+<li>Added the ext-todo patch from André Oppermann
+&lt;oppermann@pipeline.ch&gt;
+<li>Removed oversize DNS patch.  If you need to handle oversized DNS
+responses, install dnscache.
+<li>Made the extra "msglog@ME" copy optional: to remove it, add the
+following to the rpm command line: <tt>--define 'no_msglog 1'</tt>
+<li>Removed checkpassword.
+<li>Removed the condredirect patch that caused it to not work with the
+mess822 tools.
+<li>Changed the default logging option from splogger to multilog.
+<li>Modified the server startup scripts to always limit the data size.
+<li>Removed the CPU time ulimit control.
+<li>Added patch from Peter van Dijk &lt;peter@dataloss.nl&gt; to make
+qmail-qmtpd read <tt>badmailfrom</tt>.
+<li>Updated the QMTP patch for qmail-remote to make it properly fall
+back to SMTP.
+<li>Added patch by Scott Gifford to make qmail recognize 0.0.0.0 as a
+local IP.
+<li>Added the ext-todo-add-big-todo patch from Andreas Aardal Hanssen
+&lt;andreas@hanssen.name&gt; to allow for both ext-todo and big-todo.
+<li>Removed the CDB files from the installed files list.
+</ul></p>
+
 <p><b>Changes in release 18:</b>
 <ul>
 <li>Added the patch from Russell Nelson to support QMTP in qmail-remote.
