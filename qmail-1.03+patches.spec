@@ -5,11 +5,12 @@ Group: Networking/Daemons
 URL: http://www.qmail.org/
 Copyright: Check with djb@koobera.math.uic.edu
 Packager: Bruce Guenter <bruceg@em.ca>
-Source0: ftp://koobera.math.uic.edu/pub/software/qmail-1.03.tar.gz
+Source0: http://cr.yp.to/qmail/qmail-1.03.tar.gz
 Source1: qmail-rhinit.tar.gz
 Source2: dot.qmail-msglog
 Source3: syncdir.c
 Source4: cron.hourly
+Source5: http://cr.yp.to/checkpassword/checkpassword-0.90.tar.gz
 Patch0: qmail-1.03-msglog.patch
 Patch1: qmail-1.03-condredirect.patch
 Patch2: qmail-1.03-showctl.patch
@@ -25,17 +26,24 @@ Patch11: big-concurrency.patch
 Summary: Qmail Mail Transfer Agent
 Provides: MTA
 Provides: smtpdaemon
+Provides: pop3daemon
+Provides: qmtpdaemon
+Provides: qmqpdaemon
 Conflicts: sendmail
 Conflicts: qmail-cyclog
 Obsoletes: qmail-utils
+Obsoletes: qmail-pop3d
+Obsoletes: qmail-qmqpd
+Obsoletes: qmail-qmtpd
+Obsoletes: qmail-smtpd
 BuildRoot: /tmp/qmail-root
-Requires: chkconfig
 Requires: initscripts
 Requires: net-tools
 Requires: sh-utils
 Requires: shadow-utils
-Requires: supervise-scripts >= 2.2
+Requires: supervise-scripts >= 3.2
 Requires: ucspi-unix
+Requires: ucspi-tcp >= 0.86-1
 
 %description
 Qmail is a small, fast, secure replacement for the sendmail package,
@@ -49,67 +57,6 @@ The source for this RPM can be found at:
 
 This package includes a local-domain daemon used to provide
 non-privileged users access to the results from the mailq command.
-
-%package pop3d
-Group: Networking/Daemons
-Summary: POP3 server support for qmail
-Provides: pop3daemon
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: sh-utils
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-tcp >= 0.86-1
-%description pop3d
-Support files for running the qmail POP3 server.
-
-%package qmtpd
-Group: Networking/Daemons
-Summary: QMTP server support for qmail
-Provides: qmtpdaemon
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: sh-utils
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-tcp >= 0.86-1
-%description qmtpd
-Support files for running the qmail QMTP server.
-
-%package smtpd
-Group: Networking/Daemons
-Summary: SMTP server support for qmail
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: sh-utils
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-tcp >= 0.86-1
-%description smtpd
-Support files for running the qmail SMTP server.
-RBL blocking is supported by the rblsmtpd in the new ucspi-tcp package.
-
-%package qmqpd
-Group: Networking/Daemons
-Summary: QMQP server support for qmail
-Provides: qmqpdaemon
-Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-Requires: chkconfig
-Requires: sh-utils
-Requires: supervise-scripts >= 2.2
-Requires: ucspi-tcp >= 0.86-1
-%description qmqpd
-Support files for running the qmail QMQP server.
-
-#%package spop3d
-#Group: Networking/Daemons
-#Summary: SSL-wrapped POP3 server support for qmail
-#Provides: spop3daemon
-#Requires: qmail = %{PACKAGE_VERSION}-%{PACKAGE_RELEASE}
-#Requires: chkconfig
-#Requires: sh-utils
-#Requires: supervise-scripts >= 2.2
-#Requires: ucspi-tcp >= 0.86-1
-#Requires: sslwrap
-#%description spop3d
-#Support files for running the qmail POP3 server with the SSL wrapper.
 
 %prep
 %setup -n qmail-1.03
@@ -130,11 +77,13 @@ fds=`ulimit -n`
 let spawnlimit='(fds-6)/2'
 echo $spawnlimit >conf-spawn
 
-tar -xzf $RPM_SOURCE_DIR/qmail-rhinit.tar.gz
+tar -xzf %{SOURCE1}
 
 for source in cron.hourly dot.qmail-msglog syncdir.c; do
 	cp $RPM_SOURCE_DIR/$source .
 done
+
+tar -xzf %{SOURCE5}
 
 %build
 
@@ -145,6 +94,10 @@ make it man
 
 pushd qmail-rhinit
   make "CFLAGS=$RPM_OPT_FLAGS" "LDFLAGS=-s" all
+popd
+
+pushd checkpassword-0.90
+  make
 popd
 
 %install
@@ -219,6 +172,12 @@ pushd qmail-rhinit
   make PREFIX=$RPM_BUILD_ROOT bindir=%{_bindir} mandir=%{_mandir} install
 popd
 
+pushd checkpassword-0.90
+  echo $RPM_BUILD_ROOT >conf-home
+  rm -f auto_home.c auto_home.o
+  make setup check
+popd
+
 # Install extra shell scripts
 install_file cron.hourly etc/cron.hourly/qmail -m 755
 
@@ -282,13 +241,6 @@ PATH="/sbin:/usr/sbin:$PATH" export PATH
 add_user() { grep "^$1:" /etc/passwd >/dev/null || useradd -d "$3" -g "$2" -M -r -s /bin/true "$1"; }
 add_group() { grep "^$1:" /etc/group >/dev/null || groupadd -r "$1"; }
 
-if [ $1 = 2 ]; then
-	# Disable deliveries if upgrading
-	test -d /etc/qmail/alias && chmod +t /etc/qmail/alias
-	test -d /var/qmail/alias && chmod +t /var/qmail/alias
-	test -d /home && chmod +t /home/*
-fi
-
 add_group qmail
 add_group nofiles
 
@@ -302,34 +254,19 @@ add_user qmails   qmail /var/qmail
 add_user qmaillog qmail /var/log
 
 %post
-if [ $1 = 2 ]; then
-  # Re-enable deliveries on upgrading
-  test -d /etc/qmail/alias && chmod -t /etc/qmail/alias
-  test -d /var/qmail/alias && chmod -t /var/qmail/alias
-  test -d /home && chmod -t /home/*
-fi
 %{_bindir}/qmail-rhconfig
 %{_bindir}/make-owners /etc/qmail
-/sbin/chkconfig --add qmail
-/sbin/chkconfig --add qread
-/sbin/chkconfig --add qstat
 
-%post pop3d
-/sbin/chkconfig --add pop3d
+for svc in qmail qread qstat # pop3d qmqpd qmtpd smtpd
+do
+  test -e /service/$svc || svc-add /var/qmail/service/$svc
+done
 
-%post qmqpd
-/sbin/chkconfig --add qmqpd
-
-%post qmtpd
-/sbin/chkconfig --add qmtpd
-
-%post smtpd
-/sbin/chkconfig --add smtpd
 if [ "$1" = 1 ]; then
   cd /etc
-  if [ -f inetd.conf ]; then
+  if [ -f inetd.conf ] && egrep '^smtp' inetd.conf >/dev/null 2>&1; then
     if ! [ -e inetd.conf.rpmsave ]; then
-      cp inetd.conf inetd.conf.rpmsave
+      cp -v inetd.conf inetd.conf.rpmsave
     fi
     sed	-e 's/^smtp[ 	]/#smtp	/' inetd.conf >inetd.conf.new
     mv inetd.conf.new inetd.conf
@@ -338,12 +275,17 @@ if [ "$1" = 1 ]; then
   fi
 fi
 
+echo Read %{_docdir}/README.service for instructions
+echo on starting and stopping qmail services.
+
 %preun
 if [ $1 -gt 0 ]; then exit 0; fi
 
-test -x /etc/rc.d/init.d/qmail && /etc/rc.d/init.d/qmail stop
+for svc in pop3d qmail qmqpd qmtpd qread qstat smtpd
+do
+  test ! -e /service/$svc || svc-remove $svc
+done
 
-/sbin/chkconfig --del qmail
 echo "Removing Qmail user ids..."
 userdel alias
 userdel qmaild
@@ -358,30 +300,27 @@ echo "Removing Qmail group ids..."
 groupdel qmail
 groupdel nofiles
 
-%preun pop3d
-if [ $1 -gt 0 ]; then exit 0; fi
-test -x /etc/rc.d/init.d/pop3d && /etc/rc.d/init.d/pop3d stop
-/sbin/chkconfig --del pop3d
-
-%preun qmqpd
-if [ $1 -gt 0 ]; then exit 0; fi
-test -x /etc/rc.d/init.d/qmqpd && /etc/rc.d/init.d/qmqpd stop
-/sbin/chkconfig --del qmqpd
-
-%preun qmtpd
-if [ $1 -gt 0 ]; then exit 0; fi
-test -x /etc/rc.d/init.d/qmtpd && /etc/rc.d/init.d/qmtpd stop
-/sbin/chkconfig --del qmtpd
-
-%preun smtpd
-if [ $1 -gt 0 ]; then exit 0; fi
-test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
-/sbin/chkconfig --del smtpd
-
 # Files List ###################################################################
 %files
 %defattr(-,root,qmail)
+
+%doc BLURB BLURB2 BLURB3 BLURB4 CHANGES FAQ FILES
+%doc INSTALL INSTALL.* INTERNALS PIC.* README REMOVE.*
+%doc SECURITY SENDMAIL TEST.* THANKS THOUGHTS TODO UPGRADE
+%doc qmail-rhinit/README.*
+
 %config /etc/profile.d/*
+
+%config(noreplace) /etc/tcpcontrol/pop-3.cdb
+%config(noreplace) /etc/tcpcontrol/pop-3.rules
+%config(noreplace) /etc/tcpcontrol/qmqp.cdb
+%config(noreplace) /etc/tcpcontrol/qmqp.rules
+%config(noreplace) /etc/tcpcontrol/qmtp.cdb
+%config(noreplace) /etc/tcpcontrol/qmtp.rules
+%config(noreplace) /etc/tcpcontrol/smtp.cdb
+%config(noreplace) /etc/tcpcontrol/smtp.rules
+#%config(noreplace) /etc/tcpcontrol/spop3.cdb
+#%config(noreplace) /etc/tcpcontrol/spop3.rules
 
 %defattr(-,-,qmail)
 %config /etc/cron.hourly/qmail
@@ -409,14 +348,6 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 %ghost %config(missingok,noreplace) /etc/qmail/control/rcpthosts
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/aliasempty
 %verify(mode,group,user) %config(noreplace) /etc/qmail/control/me
-
-/etc/rc.d/init.d/qmail
-/etc/rc.d/init.d/qread
-/etc/rc.d/init.d/qstat
-
-%attr(-,root,qmail) %doc BLURB BLURB2 BLURB3 BLURB4 CHANGES FAQ FILES
-%attr(-,root,qmail) %doc INSTALL INSTALL.* INTERNALS PIC.* README REMOVE.*
-%attr(-,root,qmail) %doc SECURITY SENDMAIL TEST.* THANKS THOUGHTS TODO UPGRADE
 
 %{_bindir}/bouncesaying
 %{_bindir}/condredirect
@@ -474,64 +405,5 @@ test -x /etc/rc.d/init.d/smtpd && /etc/rc.d/init.d/smtpd stop
 
 %{_sbindir}/sendmail
 
-%attr(1755,root,qmail) %dir /var/service/qmail
-%dir /var/service/qmail/log
-%config /var/service/qmail/log/run
-%config /var/service/qmail/run
-%dir /var/service/qread
-%config /var/service/qread/run
-%dir /var/service/qstat
-%config /var/service/qstat/run
-
 /var/qmail
-
-%files pop3d
-%defattr(-,root,qmail)
-/etc/rc.d/init.d/pop3d
-%config(noreplace) /etc/tcpcontrol/pop-3.cdb
-%config(noreplace) /etc/tcpcontrol/pop-3.rules
-%attr(1755,root,qmail) %dir /var/service/pop3d
-%dir /var/service/pop3d/log
-%config /var/service/pop3d/log/run
-%config /var/service/pop3d/run
-
-%files qmqpd
-%defattr(-,root,qmail)
-/etc/rc.d/init.d/qmqpd
-%config(noreplace) /etc/tcpcontrol/qmqp.cdb
-%config(noreplace) /etc/tcpcontrol/qmqp.rules
-%attr(1755,root,qmail) %dir /var/service/qmqpd
-%dir /var/service/qmqpd/log
-%config /var/service/qmqpd/log/run
-%config /var/service/qmqpd/run
-
-%files qmtpd
-%defattr(-,root,qmail)
-/etc/rc.d/init.d/qmtpd
-%config(noreplace) /etc/tcpcontrol/qmtp.cdb
-%config(noreplace) /etc/tcpcontrol/qmtp.rules
-%attr(1755,root,qmail) %dir /var/service/qmtpd
-%dir /var/service/qmtpd/log
-%config /var/service/qmtpd/log/run
-%config /var/service/qmtpd/run
-
-%files smtpd
-%defattr(-,root,qmail)
-/etc/rc.d/init.d/smtpd
-%config(noreplace) /etc/tcpcontrol/smtp.cdb
-%config(noreplace) /etc/tcpcontrol/smtp.rules
-%attr(1755,root,qmail) %dir /var/service/smtpd
-%dir /var/service/smtpd/log
-%config /var/service/smtpd/log/run
-%config /var/service/smtpd/run
-
-#%files spop3d
-#%defattr(-,root,qmail)
-#/etc/rc.d/init.d/pop3d
-#%config(noreplace) /etc/tcpcontrol/spop3.cdb
-#%config(noreplace) /etc/tcpcontrol/spop3.rules
-#%attr(1755,root,qmail) %dir /var/service/spop3d
-#%dir /var/service/spop3d/log
-#%config /var/service/spop3d/log/run
-#%config /var/service/spop3d/run
 

@@ -15,21 +15,15 @@ The source rpm contains all of the other files in this directory.
 
 <p><b>This package requires the following packages:</b>
 <ul>
+<li><a href="../supervise-scripts/">supervise-scripts</a> version 3.2
 <li><a href="../rpms/daemontools/">daemontools</a> version 0.70
-<li><a href="../rpms/ucspi-tcp/">ucspi-tcp</a> version 0.86
-<li>chkconfig (included with RedHat Linux 5.0 and later)
-<li><a href="../supervise-scripts/">supervise-scripts</a> version 2.2
+<li><a href="../rpms/ucspi-tcp/">ucspi-tcp</a> version 0.88
 <li>rpm version 3.0 or later
-<li>If you are going to use <tt>qmail-pop3d</tt>, you may need to
-install <a href="../rpms/checkpassword/">checkpassword</a> to
-authenticate users.
 <li>If you are going to use <tt>qmail-mailq</tt>, <a
 href="../ucspi-unix/">ucspi-unix</a>
 </ul>
 Other packages recommended for efficient use of qmail are:
 <ul>
-<li>procmail (you can find a patched version that delivers to maildirs
-<a href="../procmail-maildir/">here</a>)
 <li><a href="../rpms/dot-forward/">dot-forward</a>
 <li><a href="../rpms/rblsmtpd/">rblsmtpd</a>
 -- A RBL blocking add-on for qmail-smtpd
@@ -57,11 +51,10 @@ have DNS responses that are larger than 512 bytes.
 <li>Startup scripts set configurable limits on daemon's CPU time and
 data size to avoid denial-of-service attacks.
 <li>Integrated optional RBL blocking support from multiple servers.
-<li>Separate packages for all the daemons.
 <li>UID/GID numbers are configured into a set of control files instead
   of hard-coded in the binaries.  This would allow a binary RPM to be
   distributed unmodified to any setup.
-<li>The qmail init script uses the contents of
+<li>The qmail run script uses the contents of
   <samp>/etc/qmail/control/aliasempty</samp> for the aliasempty argument to
   qmail-start
 <li>Message logging is done via the string in
@@ -71,9 +64,7 @@ data size to avoid denial-of-service attacks.
 <li>Intelligent login scripts (<samp>/etc/profile.d/qmail.sh</samp> and
   <samp>/etc/profile.d/qmail.tcsh</samp>).
 <li>A man page documenting the control files used by all the init scripts
-<li>All the separate packages have their own start/stop init scripts
-  which use the modified supervise mentioned above
-<li>All the network daemons use tcpserver/tcpcontrol to manage connections
+<li>All the network daemons use tcpserver to manage connections
 <li>Chuck Foster's patch to bind to local interfaces on outgoing
   connections, ported to qmail-1.03
 <li>Evan Champion's patch to conredirect, ported to qmail-1.03
@@ -81,30 +72,17 @@ data size to avoid denial-of-service attacks.
 require a patch to qmail.
 </ul></p>
 
-<p><b>This distribution builds the following packages:</b>
-<table border=0><tr>
-	<td><u>Package Name</u></td>
-	<td><u>Contents</u></td>
-</tr><tr>
-	<td>qmail</td>
-	<td>The main qmail binaries and queue structures</td>
-</tr><tr>
-	<td>qmail-pop3d</td>
-	<td>Support for the qmail POP-3 daemon</td>
-</tr><tr>
-	<td>qmail-qmqpd</td>
-	<td>Support for the qmail QMQP daemon (for QMQP null clients)</td>
-</tr><tr>
-	<td>qmail-qmtpd</td>
-	<td>Support for the qmail QMTP daemon</td>
-</tr><tr>
-	<td>qmail-smtpd</td>
-	<td>Support for the qmail SMTP daemon with optional RBL blocking</td>
-</tr></table></p>
-
 <p><b>Changes in release 17:</b>
 <ul>
-<li>Fixed the broken bin-interface patch.
+<li>Modified for use with <a
+href="../supervise-scripts/">supervise-scripts</a> 3.x.
+<li>Merged all the subpackages into one main package.
+<li>Added checkpassword to the package.
+<li>Fixed the broken bind-interface patch.
+<li>Fixed the synchronous directory add-on to properly only synchronize
+the directory when files are being created (as opposed to whenever a
+file was opened for write).
+<li>Added a README describing the patches.
 </ul></p>
 
 <p><b>Changes in release 16:</b>
