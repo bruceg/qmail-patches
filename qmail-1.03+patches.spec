@@ -15,6 +15,7 @@ Source2: dot.qmail-msglog
 Source3: syncdir.c
 Source4: cron.hourly
 Patch0: qmail-1.03-msglog.patch
+Patch1: qmail-1.03.errno.patch
 Patch2: qmail-1.03-showctl.patch
 Patch3: qmail-1.03-bind-interface.patch
 Patch4: http://www.qmail.org/big-todo.103.patch
@@ -70,6 +71,7 @@ non-privileged users access to the results from the mailq command.
 %if %{msglog}
 %patch0 -p1
 %endif
+%patch1 -p1
 %patch13 -p1
 %patch3 -p1
 %patch4 -p1
