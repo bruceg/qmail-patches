@@ -7,3 +7,5 @@
 - Use pop3front-auth/maildir in place of qmail-popup/pop3d
 
 - Get spop3d script working.
+
+- Build up a mini-qmail package?
