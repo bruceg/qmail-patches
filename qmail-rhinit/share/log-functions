@@ -6,7 +6,7 @@
 
 # Read the default logger command, making sure that any pipe symbols are
 # separated, and substituting '{}' with the service name.
-readdefault logger logger splogger
+readdefault logger logger 'multilog t /var/log/{}'
 logger=`echo $logger | \
 	sed -e 's/|/ | /' -e '/{}/!s/$/ '$service/ -e 's/{}/'$service/g`
 
