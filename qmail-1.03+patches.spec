@@ -26,7 +26,7 @@ Patch8: qmail-1.03-pop3d-stat.patch
 Patch9: qmail-1.03-queuevar.patch
 Patch10: qmail-1.03-qmail-local.patch
 Patch11: big-concurrency.patch
-Patch12: http://www.almqvist.net/johan/qmail/qmail-1.03-qmtpc-mailroutes-1.5.patch
+Patch12: http://untroubled.org/qmail/qmail-1.03-qmtpc-mailroutes-2.0.patch
 Patch13: http://www.dataloss.net/qmtpd-badmailfrom-1.1.patch
 Patch14: http://www.tir.com/~sgifford/qmail/qmail-0.0.0.0.patch
 Patch15: http://www.nrg4u.com/qmail/ext_todo-20030105.patch
