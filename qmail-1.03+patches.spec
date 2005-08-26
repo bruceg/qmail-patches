@@ -31,6 +31,7 @@ Patch13: http://www.dataloss.net/qmtpd-badmailfrom-1.1.patch
 Patch14: http://www.tir.com/~sgifford/qmail/qmail-0.0.0.0.patch
 Patch15: http://www.nrg4u.com/qmail/ext_todo-20030105.patch
 Patch16: http://andreas.hanssen.name/software/ext_todo-20020524-add-big-todo.patch
+Patch17: http://untroubled.org/qmail/qmail-1.03-fastremote-3.patch
 Summary: Qmail Mail Transfer Agent
 Provides: MTA
 Provides: smtpdaemon
@@ -89,6 +90,7 @@ non-privileged users access to the results from the mailq command.
 %patch12 -p1
 %patch2 -p1
 %patch14 -p1
+%patch17 -p1
 
 fds=`ulimit -n`
 let spawnlimit='(fds-6)/2'
